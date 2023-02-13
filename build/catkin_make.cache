@@ -1,0 +1,2 @@
+socket
+-DCATKIN_DEVEL_PREFIX=/home/ycr/catkin_socket/devel -DCMAKE_INSTALL_PREFIX=/home/ycr/catkin_socket/install -G Unix Makefiles

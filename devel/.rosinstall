@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/ycr/catkin_socket/devel/setup.sh

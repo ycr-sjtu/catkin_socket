@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/ycr/catkin_socket/src/socket/src/jsoncpp_demo.cpp
+stdio.h
+-
+string
+-
+json/json.h
+/home/ycr/catkin_socket/src/socket/src/json/json.h
+

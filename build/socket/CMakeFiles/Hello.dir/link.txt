@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC   -shared -Wl,-soname,libHello.so -o /home/ycr/catkin_socket/devel/lib/libHello.so CMakeFiles/Hello.dir/src/test/hello.cpp.o CMakeFiles/Hello.dir/src/test/test1.cpp.o 

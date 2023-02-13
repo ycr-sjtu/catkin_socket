@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/ycr/catkin_socket/src/socket/include/socket/socket.h
+iostream
+-
+string.h
+-
+
+/home/ycr/catkin_socket/src/socket/src/char2array.cpp
+socket/socket.h
+/home/ycr/catkin_socket/src/socket/src/socket/socket.h
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+
