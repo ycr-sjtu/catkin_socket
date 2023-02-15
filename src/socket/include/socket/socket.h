@@ -63,6 +63,11 @@ using namespace std;
         void stop();// 停止
         void warehouse();// 入库
 
+        bool working_signal;//true工作结束，false正在工作
+
+        //发布目的地给机器人的函数
+        void target_pub(double x,double y);
+
  };
 
 #endif

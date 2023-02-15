@@ -109,11 +109,17 @@ void Socket::right(){
 };
 
 void Socket::stop(){
-    ROS_INFO("停止");
+    ROS_INFO("stop");
     // 发布停止msg
+    
 };
 
 void Socket::warehouse(){
-    ROS_INFO("入库");
-     // 发布入库msg
+    ROS_INFO("warehouse");
+    // 发布入库msg
+
 };
+
+void Socket::target_pub(double x,double y){
+    //发布目的地msg
+}

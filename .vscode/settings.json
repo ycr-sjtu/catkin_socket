@@ -63,7 +63,8 @@
         "random": "cpp",
         "set": "cpp",
         "list": "cpp",
-        "typeindex": "cpp"
+        "typeindex": "cpp",
+        "core": "cpp"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }
