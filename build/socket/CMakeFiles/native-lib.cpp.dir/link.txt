@@ -1,1 +1,0 @@
-/usr/bin/c++ -fPIC   -shared -Wl,-soname,libnative-lib.cpp.so -o /home/ycr/catkin_socket/devel/lib/libnative-lib.cpp.so CMakeFiles/native-lib.cpp.dir/jsoncpp/json_reader.cpp.o CMakeFiles/native-lib.cpp.dir/jsoncpp/json_value.cpp.o CMakeFiles/native-lib.cpp.dir/jsoncpp/json_writer.cpp.o 

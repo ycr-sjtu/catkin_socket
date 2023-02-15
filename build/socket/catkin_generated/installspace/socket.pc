@@ -1,8 +1,0 @@
-prefix=/home/ycr/catkin_socket/install
-
-Name: socket
-Description: Description of socket
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

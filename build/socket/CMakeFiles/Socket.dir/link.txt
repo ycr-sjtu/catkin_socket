@@ -1,1 +1,0 @@
-/usr/bin/c++ -fPIC   -shared -Wl,-soname,libSocket.so -o /home/ycr/catkin_socket/devel/lib/libSocket.so CMakeFiles/Socket.dir/src/test001.cpp.o 
