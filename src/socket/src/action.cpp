@@ -3,12 +3,12 @@
 
 using namespace std;
 
-int Socket::action2(char *recv2, char *recv2_send, int recv2_length)
+int Socket::action2_start(char *recv2, char *recv2_send, int recv2_length, double * target_x, double * target_y)
 {
 
     // 显示recv2的内容
-    cout << "recv2:";
-    display(recv2, recv2_length);
+    // cout << "recv2:";
+    // display(recv2, recv2_length);
 
     // 删除前5位
     char recv2_cut[1024];
@@ -17,8 +17,66 @@ int Socket::action2(char *recv2, char *recv2_send, int recv2_length)
     recv2_cut[recv2_length - 5] = '\0';
 
     // 显示recv2_cut的内容
-    cout << "recv2_cut:";
-    display(recv2_cut, strlen(recv2_cut));
+    // cout << "recv2_cut:";
+    // display(recv2_cut, strlen(recv2_cut));
+
+    // 把char数组拼成一整个char
+    char recv2_char[1024];
+    memset(recv2_char, 0, sizeof(recv2_char));
+    array2char(recv2_cut, recv2_char);
+
+    // 16进制转ascii
+    char recv2_ascii[1024];
+    memset(recv2_ascii, 0, sizeof(recv2_ascii));
+    hex2ascii(recv2_char, recv2_ascii);
+    
+    // 读取收到的json指令，生成回复内容
+    char recv2_json[1024];
+    memset(recv2_json, 0, sizeof(recv2_json));
+    (this->recv2_json_start)(recv2_ascii, recv2_json, target_x, target_y);
+
+    // ascii转16进制
+    char recv2_hex[1024];
+    memset(recv2_hex, 0, sizeof(recv2_hex));
+    ascii2hex(recv2_json, recv2_hex);
+
+    // 16进制char转char[]
+    char recv2_array[1024];
+    memset(recv2_array, 0, sizeof(recv2_array));
+    char2array(recv2_hex, recv2_array);
+
+    // 添加前7位
+    for (int i = 0; i < 7; i++)
+    {
+        recv2_send[i] = cmd2_head[i];
+    };
+    for (int i = 0; i < strlen(recv2_array); i++)
+    {
+        recv2_send[i + 7] = recv2_array[i];
+    };
+
+    cout << "cmd2_start:";
+    display(recv2_send, sizeof(cmd2_head) + strlen(recv2_array));
+
+    return sizeof(cmd2_head) + strlen(recv2_array);
+};
+
+int Socket::action2(char *recv2, char *recv2_send, int recv2_length)
+{
+
+    // 显示recv2的内容
+    // cout << "recv2:";
+    // display(recv2, recv2_length);
+
+    // 删除前5位
+    char recv2_cut[1024];
+    memset(recv2_cut, 0, sizeof(recv2_cut));
+    strncpy(recv2_cut, recv2 + 5, recv2_length - 5); // 从recv2+5开始到结尾的字符复制到recv2_cut中
+    recv2_cut[recv2_length - 5] = '\0';
+
+    // 显示recv2_cut的内容
+    // cout << "recv2_cut:";
+    // display(recv2_cut, strlen(recv2_cut));
 
     // 把char数组拼成一整个char
     char recv2_char[1024];
@@ -65,8 +123,8 @@ int Socket::action2_over(char *recv2, char *recv2_send, int recv2_length)
 {
 
     // 显示recv2的内容
-    cout << "recv2:";
-    display(recv2, recv2_length);
+    // cout << "recv2:";
+    // display(recv2, recv2_length);
 
     // 删除前5位
     char recv2_cut[1024];
@@ -75,8 +133,8 @@ int Socket::action2_over(char *recv2, char *recv2_send, int recv2_length)
     recv2_cut[recv2_length - 5] = '\0';
 
     // 显示recv2_cut的内容
-    cout << "recv2_cut:";
-    display(recv2_cut, strlen(recv2_cut));
+    // cout << "recv2_cut:";
+    // display(recv2_cut, strlen(recv2_cut));
 
     // 把char数组拼成一整个char
     char recv2_char[1024];
@@ -113,7 +171,7 @@ int Socket::action2_over(char *recv2, char *recv2_send, int recv2_length)
         recv2_send[i + 7] = recv2_array[i];
     };
 
-    cout << "cmd2:";
+    cout << "cmd2_over:";
     display(recv2_send, sizeof(cmd2_over) + strlen(recv2_array));
 
     return sizeof(cmd2_over) + strlen(recv2_array);

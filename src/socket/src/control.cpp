@@ -111,15 +111,23 @@ void Socket::right(){
 void Socket::stop(){
     ROS_INFO("stop");
     // 发布停止msg
-    
+    // state=1//停止
 };
 
 void Socket::warehouse(){
     ROS_INFO("warehouse");
     // 发布入库msg
-
+    //state=2 //入库
 };
 
-void Socket::target_pub(double x,double y){
+void Socket::robot_pub(double target_x,double target_y){
     //发布目的地msg
+    //state = 0 // 作业
+    cout<<"target_x:"<<target_x<<endl;
+	cout<<"target_y:"<<target_y<<endl;
+}
+
+void Socket::robot_sub(atomic_bool * working_signal){
+    //订阅工作状态，x，y，lon，lat, state
+    //if(state==1){working_signal=false}
 }

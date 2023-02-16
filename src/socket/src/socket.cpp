@@ -15,6 +15,7 @@
 #include "socket/socket.h"
 #include <thread>
 #include <mutex>
+#include<atomic>
 
 #define MYPORT 3311	  // 端口号
 #define BUF_SIZE 1024 // 数据缓冲区最大长度
@@ -33,6 +34,7 @@ int main(int argc, char **argv)
 	// ros::NodeHandle n;
 
 	char recvbuf[BUF_SIZE];
+	char recvbuf2[BUF_SIZE];
 	char sendbuf[BUF_SIZE];
 
 	/*
@@ -84,6 +86,8 @@ int main(int argc, char **argv)
 		char recv1[] = {0x00, 0x00, 0x00, 0x00, 0x01};
 		// recv2: 00 00 00 00 02 + {"x":"7","y":"7","id":"1"}
 		char recv2[] = {0x00, 0x00, 0x00, 0x00, 0x02, 0x7B, 0x22, 0x78, 0x22, 0x3A, 0x22, 0x37, 0x22, 0x2C, 0x22, 0x79, 0x22, 0x3A, 0x22, 0x37, 0x22, 0x2C, 0x22, 0x69, 0x64, 0x22, 0x3A, 0x22, 0x31, 0x22, 0x7D};
+		// recv2: 00 00 00 00 02 + {"x":"7.0123456","y":"7","id":"1"}
+		// char recv2[] = {0x00, 0x00, 0x00, 0x00, 0x02, 0x7b, 0x22,0x78, 0x22, 0x3a, 0x22, 0x37, 0x2e, 0x30,0x31, 0x32, 0x33, 0x34, 0x35, 0x36,0x22, 0x2c, 0x22, 0x79, 0x22, 0x3a, 0x22, 0x37, 0x22, 0x2c, 0x22, 0x69, 0x64, 0x22, 0x3a, 0x22, 0x31, 0x22, 0x7d};
 		char recv3[] = {0x00, 0x00, 0x00, 0x00, 0x03};
 		char recv4[] = {0x00, 0x00, 0x00, 0x00, 0x04};
 		char recv5[] = {0x00, 0x00, 0x00, 0x00, 0x05};
@@ -92,93 +96,83 @@ int main(int argc, char **argv)
 		char recv8[] = {0x00, 0x00, 0x00, 0x00, 0x08};
 		char recv9[] = {0x00, 0x00, 0x00, 0x00, 0x09};
 
-		// for(int i =0;i<sizeof(recv2);i++){
-		// 	recvbuf[i]=recv2[i];
-		// };
-		// recvbuf_length=sizeof(recv2);
+		for(int i =0;i<sizeof(recv2);i++){
+			recvbuf[i]=recv2[i];
+		};
+		recvbuf_length=sizeof(recv2);
 
 		// 匹配指令内容
 		switch (recvbuf[4])
 		{
 
 		case 0x01: // 连接
+		{
 			cout << "received recv1" << endl;
 			send(socket_cli, socket.cmd1, sizeof(socket.cmd1), 0);
 			cout << "send cmd1 successfully" << endl;
 			break;
+		}
 
 		case 0x02: // 运动指令
-			
-			//问题1、怎么实现一直发布到停止。写一个while循化
+		{
 			//先把xy坐标发布给机器人
 			//机器人收到坐标，改变状态为1，开始执行作业指令，while循环开始
 			//机器人作业结束，发布状态为0，while循环结束，发布结束指令。
 			//停止的指令优先级最高，点击停止的时候，状态改变，所以还是要多线程，同时监听状态改变
-
-			bool send_signal = true;
-			bool listen_signal = true;
-			bool stop_signal = false;
-			double x = 0;
-			double y = 0;
-			char char_x;
-			char char_y;
+			std::atomic<bool> send_signal(true);
+			std::atomic<bool> listen_signal(true);
+			socket.working_signal = false;//true工作结束，false正在工作
+			double target_x = 0;
+			double target_y = 0;
 			
 			//第一次发送
 			cout << "received recv2" << endl;
 			memset(socket.cmd2, 0, sizeof(socket.cmd2));//清除内存
-			send_length = socket.action2(recvbuf,socket.cmd2,recvbuf_length);//操作2
-			//action2要输出char_x,char_y坐标。
-			// char转double
-
+			
+			//修改：输出x,y,lon,lat,state
+			//写到action里面，每个action都需要sub
+			// socket.robot_sub(&socket.working_signal);
+			
+			send_length = socket.action2_start(recvbuf,socket.cmd2,recvbuf_length,&target_x,&target_y);//操作2
 			send(socket_cli, socket.cmd2, send_length, 0);//发送
 			cout << "send cmd2 successfully" << endl;
-			socket.target_pub(x,y);//发布目的地给机器人
-			socket.working_signal = false;//true工作结束，false正在工作
+			socket.robot_pub(target_x,target_y);//发布目的地给机器人
 			
-			// thread send([]{});
-			// 线程1，发送
-			while(send_signal){
-				//开始发送
-				memset(socket.cmd2, 0, sizeof(socket.cmd2));//清除内存
-				send_length = socket.action2(recvbuf,socket.cmd2,recvbuf_length);//操作2
-				send(socket_cli, socket.cmd2, send_length, 0);//发送
-				cout << "send cmd2 successfully" << endl;
-				sleep(1);			
-				while(mtx.try_lock()){
-					if(stop_signal){
-						send_signal = false;
-						socket.stop();//ros发布停止话题
-					};
-					mtx.unlock();
-				}
-			}
-
-			// 线程2，监听
-			//while(没有停止指令){监听}
-			while(listen_signal){
-				recv(socket_cli, recvbuf, sizeof(recvbuf), 0);
-				//如果有停止信号
-				if(recvbuf[4]==0x04){
-					listen_signal = false;
-					while(mtx.try_lock()){
-						stop_signal = true;
-						mtx.unlock();
-					}
-				}
-				//如果有完成工作信号
-				while(mtx.try_lock()){
+			
+			// 线程1:发送
+			thread send_cmd([&]{
+				while(send_signal.load()){
+					//发送
+					memset(socket.cmd2, 0, sizeof(socket.cmd2));//清除内存
+					send_length = socket.action2(recvbuf,socket.cmd2,recvbuf_length);//操作2
+					send(socket_cli, socket.cmd2, send_length, 0);//发送
+					cout << "send cmd2 successfully" << endl;
+					sleep(1);
+					//如果有工作完成信号
 					if(socket.working_signal){
-						listen_signal = false;
-						stop_signal = true;
+						listen_signal = false; // 监听停止
+						send_signal = false; // 发送停止
+						socket.stop(); //ros发布停止话题
 					}
-					mtx.unlock();
 				}
-			}
-
+			});
+			
+			// 线程2:监听
+			thread listen_cmd([&]{
+				while(listen_signal.load()){
+					recv(socket_cli, recvbuf2, sizeof(recvbuf2), 0);
+					//如果有停止信号
+					if(recvbuf2[4]==0x04){
+						listen_signal = false; // 监听停止
+						send_signal = false; // 发送停止
+						socket.stop(); //ros发布停止话题
+					}
+				}
+			});
+			
 			//线程join
-			// send.join();
-			// listen.join();
-
+			send_cmd.join();
+			listen_cmd.join();
 
 			//结束发送
 			memset(socket.cmd2, 0, sizeof(socket.cmd2));//清除内存
@@ -187,16 +181,20 @@ int main(int argc, char **argv)
 			cout << "send cmd2_over successfully" << endl;
 			socket.working_signal = false;//
 			break;
-		
+		}
+
 		case 0x03: // 获取机器人位置
+		{
 			cout << "received recv3" << endl;
 			memset(socket.cmd3, 0, sizeof(socket.cmd3));//清除内存
 			send_length = socket.action3(recvbuf,socket.cmd3,recvbuf_length);//操作3
 			send(socket_cli, socket.cmd3, send_length, 0);//发送
 			cout << "send cmd3 successfully" << endl;
 			break;
-		
+		}
+
 		case 0x04: // 停止
+		{
 			cout << "received recv4" << endl;
 			socket.stop();//ros发布停止话题
 			memset(socket.cmd4, 0, sizeof(socket.cmd4));//清除内存
@@ -204,8 +202,10 @@ int main(int argc, char **argv)
 			send(socket_cli, socket.cmd4, send_length, 0);//发送
 			cout << "send cmd4 successfully" << endl;
 			break;
-		
+		}
+
 		case 0x05: // 入库
+		{
 			cout << "received recv5" << endl;
 			socket.warehouse();//ros发布入库话题
 			memset(socket.cmd4, 0, sizeof(socket.cmd4));//清除内存
@@ -213,8 +213,10 @@ int main(int argc, char **argv)
 			send(socket_cli, socket.cmd4, send_length, 0);//发送
 			cout << "send cmd5 successfully" << endl;
 			break;
-			
+		}
+
 		case 0x06: // 前进
+		{
 			cout << "received recv6" << endl;
 			socket.forward();//ros前进速度发布函数，延时1s停止。
 			memset(socket.cmd4, 0, sizeof(socket.cmd4));//清除内存
@@ -222,8 +224,10 @@ int main(int argc, char **argv)
 			send(socket_cli, socket.cmd4, send_length, 0);//发送
 			cout << "send cmd6 successfully" << endl;
 			break;
-		
+		}
+
 		case 0x07: // 后退
+		{
 			cout << "received recv7" << endl;
 			socket.back();//ros后退速度发布函数，延时1s停止。
 			memset(socket.cmd4, 0, sizeof(socket.cmd4));//清除内存
@@ -231,8 +235,10 @@ int main(int argc, char **argv)
 			send(socket_cli, socket.cmd4, send_length, 0);//发送
 			cout << "send cmd7 successfully" << endl;
 			break;
-		
+		}
+
 		case 0x08: // 左转
+		{
 			cout << "received recv8" << endl;
 			socket.left();//ros左转速度发布函数，延时1s停止。
 			memset(socket.cmd4, 0, sizeof(socket.cmd4));//清除内存
@@ -240,8 +246,10 @@ int main(int argc, char **argv)
 			send(socket_cli, socket.cmd4, send_length, 0);//发送
 			cout << "send cmd8 successfully" << endl;
 			break;
-		
+		}
+
 		case 0x09: // 右转
+		{
 			cout << "received recv9" << endl;
 			socket.right();//ros右转速度发布函数，延时1s停止。
 			memset(socket.cmd4, 0, sizeof(socket.cmd4));//清除内存
@@ -249,6 +257,7 @@ int main(int argc, char **argv)
 			send(socket_cli, socket.cmd4, send_length, 0);//发送
 			cout << "send cmd9 successfully" << endl;
 			break;
+		}
 		
 		default:
 			cout << "no this cmd" << endl;

@@ -51,6 +51,57 @@ void Socket::recv2_json(char *str, char *myJsonChar)
     printf("json_char: %s\n", myJsonChar);
 };
 
+// 修改：
+// 输出double target_x, double target_y，输入x, y, lon, lat
+void Socket::recv2_json_start(char *str, char *myJsonChar, double * target_x, double * target_y)
+{
+
+    // jsoncpp 解析json字符串
+    cout << "收到的消息为: " << str << endl;
+
+    Json::Reader reader(Json::Features::strictMode());
+    Json::Value _root;
+    std::string sBuffer = (char *)str;
+
+    if (!reader.parse(sBuffer, _root))
+    {
+        cout << "json解析错误" << endl;
+    }
+    else
+    {
+        cout << "json解析成功" << endl;
+    }
+
+    // jsoncpp 初始化json对象
+    Json::Value myJson;
+    myJson["runningSpeed"] = "1";
+    myJson["recoveryRate"] = "60.3";
+    myJson["x"] = "1";
+    myJson["y"] = "1";
+    myJson["lon"] = "1";
+    myJson["lat"] = "1";
+    myJson["id"] = _root["id"];
+    myJson["status"] = "01";
+
+    // jsoncpp json对象转换成字符串
+    Json::FastWriter _Writer;
+    std::string myJsonStr = _Writer.write(myJson);
+
+    // string转char
+    for (int i = 0; i < myJsonStr.length(); i++)
+    {
+        myJsonChar[i] = myJsonStr[i];
+    }
+    myJsonChar[myJsonStr.length() - 1] = '\0';
+    printf("json_char: %s\n", myJsonChar);
+
+    string x = _root.get("x","").asString();
+    string y = _root.get("y","").asString();
+
+    * target_x = std::stod(x);
+    * target_y = std::stod(y);
+};
+
 /* 03指令的json处理函数
 发送指令为{"runningSpeed":"1","recoveryRate":"60","x":"0","y":"0","lon":"0","lat":"0","status":"02"}
 */

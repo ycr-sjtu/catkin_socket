@@ -64,7 +64,8 @@
         "set": "cpp",
         "list": "cpp",
         "typeindex": "cpp",
-        "core": "cpp"
+        "core": "cpp",
+        "csignal": "cpp"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }
