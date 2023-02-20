@@ -1,6 +1,7 @@
 #include "socket/socket.h"
 #include "ros/ros.h"
 #include "geometry_msgs/Twist.h"
+#include"turtlesim/Pose.h"
 
 void Socket::forward()
 {
@@ -110,6 +111,8 @@ void Socket::right(){
 
 void Socket::stop(){
     ROS_INFO("stop");
+    ros::NodeHandle n;
+    
     // 发布停止msg
     // state=1//停止
 };
@@ -127,7 +130,22 @@ void Socket::robot_pub(double target_x,double target_y){
 	cout<<"target_y:"<<target_y<<endl;
 }
 
+float * doPose(const turtlesim::Pose::ConstPtr &p)
+{
+    ROS_INFO("乌龟位姿信息:x=%.2f,y=%.2f,theta=%.2f,lv=%.2f,av=%.2f",
+        p->x,p->y,p->theta,p->linear_velocity,p->angular_velocity);
+    float pose[2];
+    pose[1]=p->x;
+    pose[2]=p->y;
+    return pose;
+}
+
 void Socket::robot_sub(atomic_bool * working_signal){
     //订阅工作状态，x，y，lon，lat, state
     //if(state==1){working_signal=false}
+    ros::NodeHandle n;
+    ros::Subscriber sub = n.subscribe<turtlesim::Pose>("/turtle1/pose",1000,doPose);
+    // ros::Subscriber sub = n.subscrib订阅GPS和state
+    ros::spin();
+    
 }

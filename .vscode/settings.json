@@ -65,7 +65,9 @@
         "list": "cpp",
         "typeindex": "cpp",
         "core": "cpp",
-        "csignal": "cpp"
+        "csignal": "cpp",
+        "ros.h": "c",
+        "*.ipp": "cpp"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }
