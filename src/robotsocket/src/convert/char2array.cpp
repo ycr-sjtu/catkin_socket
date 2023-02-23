@@ -1,4 +1,4 @@
-#include"socket/socket.h"
+#include"robotsocket/robotsocket.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -46,7 +46,7 @@ int hex2bytes(char *hex, char *bytes)
     return nbytes;
 }
  
-void Socket::char2array(char * hex, char * stream)
+void RobotSocket::char2array(char * hex, char * stream)
 {
     // char hex[] = "070A0210030000000000";
     // char stream[10];

@@ -1,4 +1,4 @@
-#include "socket/socket.h"
+#include "robotsocket/robotsocket.h"
 #include <iostream>
 #include <jsoncpp/json/json.h>
 using namespace std;
@@ -8,7 +8,7 @@ using namespace std;
 发送指令为{"id":"1","lat":"1","lon":"1","runningspeed":"1","recoveryRate":"60.3","status":"01","x":"1","y":"1"}
 */
 
-void Socket::recv2_json(char *str, char *myJsonChar)
+void RobotSocket::recv2_json(char *str, char *myJsonChar)
 {
 
     // jsoncpp 解析json字符串
@@ -53,7 +53,7 @@ void Socket::recv2_json(char *str, char *myJsonChar)
 
 // 修改：
 // 输出double target_x, double target_y，输入x, y, lon, lat
-void Socket::recv2_json_start(char *str, char *myJsonChar, double * target_x, double * target_y)
+void RobotSocket::recv2_json_start(char *str, char *myJsonChar, double * target_x, double * target_y)
 {
 
     // jsoncpp 解析json字符串
@@ -106,7 +106,7 @@ void Socket::recv2_json_start(char *str, char *myJsonChar, double * target_x, do
 发送指令为{"runningSpeed":"1","recoveryRate":"60","x":"0","y":"0","lon":"0","lat":"0","status":"02"}
 */
 
-void Socket::recv3_json(char *myJsonChar)
+void RobotSocket::recv3_json(char *myJsonChar)
 {
 
     // jsoncpp 初始化json对象
@@ -136,7 +136,7 @@ void Socket::recv3_json(char *myJsonChar)
 发送指令为{"runningSpeed":"8.6","recoveryRate":"0","x":"5","y":"5","lon":"5","lat":"5","status":"01"}
 */
 
-void Socket::recv4_json(char *myJsonChar)
+void RobotSocket::recv4_json(char *myJsonChar)
 {
     // jsoncpp 初始化json对象
     Json::Value myJson;

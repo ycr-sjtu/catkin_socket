@@ -1,4 +1,4 @@
-#include"socket/socket.h"
+#include"robotsocket/robotsocket.h"
 #include<string.h>
 #include<iostream>
 #include<unistd.h>
@@ -44,7 +44,7 @@ string bytestohexstring(char* bytes,int bytelength)
 //char ascii[]="{"x":"7","y":"7","id":"1"}"
 //char hex[] = "7b2278223a2237222c2279223a2237222c226964223a2231227d"
 
-void Socket::ascii2hex(char* ascii, char* hex)  
+void RobotSocket::ascii2hex(char* ascii, char* hex)  
 {
         std::string result;
         result = bytestohexstring(ascii,strlen(ascii));  

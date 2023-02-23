@@ -1,12 +1,12 @@
-#ifndef SOCKET_H
-#define SOCKET_H
+#ifndef ROBOTSOCKET_H
+#define ROBOTSOCKET_H
 #pragma once
 #include<iostream>
 #include<string.h>
 #include<atomic>
 using namespace std;
  
- class Socket{
+ class RobotSocket{
     public:
 
         // 展示接受和发送数据内容

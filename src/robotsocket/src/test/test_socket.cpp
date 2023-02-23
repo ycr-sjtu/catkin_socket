@@ -55,10 +55,11 @@ int main(int argc, char **argv)
 		std::cout << "connected successfullly!" << std::endl;
 
 	cout << "连接成功" << endl;
-	char cmd[] = "{\"lng\":121.4321,\"lat\":31.9876}";
+	char cmd[] = "{\"lng\":121,\"lat\":36}";
 	send(socket_cli, cmd, sizeof(cmd), 0);//发送
+	// recv(socket_cli, recvbuf, sizeof(recvbuf), 0);
 	cout << cmd << endl;
-	cout << sizeof(cmd) << endl;
+	// cout << strlen(cmd) << endl;
 	cout << "发送成功" << endl;
 	/*
 	 *@fuc: 关闭连接

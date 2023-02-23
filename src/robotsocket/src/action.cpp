@@ -1,9 +1,9 @@
-#include "socket/socket.h"
+#include "robotsocket/robotsocket.h"
 #include <iostream>
 
 using namespace std;
 
-int Socket::action2_start(char *recv2, char *recv2_send, int recv2_length, double * target_x, double * target_y)
+int RobotSocket::action2_start(char *recv2, char *recv2_send, int recv2_length, double * target_x, double * target_y)
 {
 
     // 显示recv2的内容
@@ -61,7 +61,7 @@ int Socket::action2_start(char *recv2, char *recv2_send, int recv2_length, doubl
     return sizeof(cmd2_head) + strlen(recv2_array);
 };
 
-int Socket::action2(char *recv2, char *recv2_send, int recv2_length)
+int RobotSocket::action2(char *recv2, char *recv2_send, int recv2_length)
 {
 
     // 显示recv2的内容
@@ -119,7 +119,7 @@ int Socket::action2(char *recv2, char *recv2_send, int recv2_length)
     return sizeof(cmd2_head) + strlen(recv2_array);
 };
 
-int Socket::action2_over(char *recv2, char *recv2_send, int recv2_length)
+int RobotSocket::action2_over(char *recv2, char *recv2_send, int recv2_length)
 {
 
     // 显示recv2的内容
@@ -177,7 +177,7 @@ int Socket::action2_over(char *recv2, char *recv2_send, int recv2_length)
     return sizeof(cmd2_over) + strlen(recv2_array);
 };
 
-int Socket::action3(char *recv3, char *recv3_send, int recv3_length)
+int RobotSocket::action3(char *recv3, char *recv3_send, int recv3_length)
 {
     // 生成回复内容json
     char recv3_json[1024];
@@ -209,7 +209,7 @@ int Socket::action3(char *recv3, char *recv3_send, int recv3_length)
     return sizeof(cmd3_head) + strlen(recv3_array);
 };
 
-int Socket::action4(char *recv4, char *recv4_send, int recv4_length)
+int RobotSocket::action4(char *recv4, char *recv4_send, int recv4_length)
 {
     // 生成回复内容json
     char recv4_json[1024];

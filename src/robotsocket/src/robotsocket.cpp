@@ -12,7 +12,7 @@
 #include <string.h>
 #include <iostream>
 
-#include "socket/socket.h"
+#include "robotsocket/robotsocket.h"
 #include <thread>
 #include <mutex>
 #include<atomic>
@@ -30,7 +30,7 @@ using namespace std;
 int main(int argc, char **argv)
 {
 	//初始化ros节点
-	ros::init(argc, argv, "socket");
+	ros::init(argc, argv, "robotsocket");
 	// ros::NodeHandle n;
 
 	char recvbuf[BUF_SIZE];
@@ -72,7 +72,7 @@ int main(int argc, char **argv)
 	while (ros::ok)
 	{
 
-		Socket socket;
+		RobotSocket robotsocket;
 		mutex mtx;
 
 		// 使用recv()函数来接收服务器发送的消息
@@ -80,7 +80,7 @@ int main(int argc, char **argv)
 
 		// 显示接受到的消息recvbuf
 		cout << "recvbuf:";
-		socket.display(recvbuf, recvbuf_length);
+		robotsocket.display(recvbuf, recvbuf_length);
 		
 		//测试指令
 		char recv1[] = {0x00, 0x00, 0x00, 0x00, 0x01};
@@ -108,7 +108,7 @@ int main(int argc, char **argv)
 		case 0x01: // 连接
 		{
 			cout << "received recv1" << endl;
-			send(socket_cli, socket.cmd1, sizeof(socket.cmd1), 0);
+			send(socket_cli, robotsocket.cmd1, sizeof(robotsocket.cmd1), 0);
 			cout << "send cmd1 successfully" << endl;
 			break;
 		}
@@ -121,38 +121,38 @@ int main(int argc, char **argv)
 			//停止的指令优先级最高，点击停止的时候，状态改变，所以还是要多线程，同时监听状态改变
 			std::atomic<bool> send_signal(true);
 			std::atomic<bool> listen_signal(true);
-			socket.working_signal = false;//true工作结束，false正在工作
+			robotsocket.working_signal = false;//true工作结束，false正在工作
 			double target_x = 0;
 			double target_y = 0;
 			
 			//第一次发送
 			cout << "received recv2" << endl;
-			memset(socket.cmd2, 0, sizeof(socket.cmd2));//清除内存
+			memset(robotsocket.cmd2, 0, sizeof(robotsocket.cmd2));//清除内存
 			
 			//修改：输出x,y,lon,lat,state
 			//写到action里面，每个action都需要sub
-			// socket.robot_sub(&socket.working_signal);
+			//robot socket.robot_sub(&robotsocket.working_signal);
 			
-			send_length = socket.action2_start(recvbuf,socket.cmd2,recvbuf_length,&target_x,&target_y);//操作2
-			send(socket_cli, socket.cmd2, send_length, 0);//发送
+			send_length = robotsocket.action2_start(recvbuf,robotsocket.cmd2,recvbuf_length,&target_x,&target_y);//操作2
+			send(socket_cli, robotsocket.cmd2, send_length, 0);//发送
 			cout << "send cmd2 successfully" << endl;
-			socket.robot_pub(target_x,target_y);//发布目的地给机器人
+			robotsocket.robot_pub(target_x,target_y);//发布目的地给机器人
 			
 			
 			// 线程1:发送
 			thread send_cmd([&]{
 				while(send_signal.load()){
 					//发送
-					memset(socket.cmd2, 0, sizeof(socket.cmd2));//清除内存
-					send_length = socket.action2(recvbuf,socket.cmd2,recvbuf_length);//操作2
-					send(socket_cli, socket.cmd2, send_length, 0);//发送
+					memset(robotsocket.cmd2, 0, sizeof(robotsocket.cmd2));//清除内存
+					send_length = robotsocket.action2(recvbuf,robotsocket.cmd2,recvbuf_length);//操作2
+					send(socket_cli, robotsocket.cmd2, send_length, 0);//发送
 					cout << "send cmd2 successfully" << endl;
 					sleep(1);
 					//如果有工作完成信号
-					if(socket.working_signal){
+					if(robotsocket.working_signal){
 						listen_signal = false; // 监听停止
 						send_signal = false; // 发送停止
-						socket.stop(); //ros发布停止话题
+						robotsocket.stop(); //ros发布停止话题
 					}
 				}
 			});
@@ -165,7 +165,7 @@ int main(int argc, char **argv)
 					if(recvbuf2[4]==0x04){
 						listen_signal = false; // 监听停止
 						send_signal = false; // 发送停止
-						socket.stop(); //ros发布停止话题
+						robotsocket.stop(); //ros发布停止话题
 					}
 				}
 			});
@@ -175,20 +175,20 @@ int main(int argc, char **argv)
 			listen_cmd.join();
 
 			//结束发送
-			memset(socket.cmd2, 0, sizeof(socket.cmd2));//清除内存
-			send_length = socket.action2_over(recvbuf,socket.cmd2,recvbuf_length);//操作2_over
-			send(socket_cli, socket.cmd2, send_length, 0);//发送
+			memset(robotsocket.cmd2, 0, sizeof(robotsocket.cmd2));//清除内存
+			send_length = robotsocket.action2_over(recvbuf,robotsocket.cmd2,recvbuf_length);//操作2_over
+			send(socket_cli, robotsocket.cmd2, send_length, 0);//发送
 			cout << "send cmd2_over successfully" << endl;
-			socket.working_signal = false;//
+			robotsocket.working_signal = false;//
 			break;
 		}
 
 		case 0x03: // 获取机器人位置
 		{
 			cout << "received recv3" << endl;
-			memset(socket.cmd3, 0, sizeof(socket.cmd3));//清除内存
-			send_length = socket.action3(recvbuf,socket.cmd3,recvbuf_length);//操作3
-			send(socket_cli, socket.cmd3, send_length, 0);//发送
+			memset(robotsocket.cmd3, 0, sizeof(robotsocket.cmd3));//清除内存
+			send_length = robotsocket.action3(recvbuf,robotsocket.cmd3,recvbuf_length);//操作3
+			send(socket_cli, robotsocket.cmd3, send_length, 0);//发送
 			cout << "send cmd3 successfully" << endl;
 			break;
 		}
@@ -196,10 +196,10 @@ int main(int argc, char **argv)
 		case 0x04: // 停止
 		{
 			cout << "received recv4" << endl;
-			socket.stop();//ros发布停止话题
-			memset(socket.cmd4, 0, sizeof(socket.cmd4));//清除内存
-			send_length = socket.action4(recvbuf,socket.cmd4,recvbuf_length);//操作4
-			send(socket_cli, socket.cmd4, send_length, 0);//发送
+			robotsocket.stop();//ros发布停止话题
+			memset(robotsocket.cmd4, 0, sizeof(robotsocket.cmd4));//清除内存
+			send_length = robotsocket.action4(recvbuf,robotsocket.cmd4,recvbuf_length);//操作4
+			send(socket_cli, robotsocket.cmd4, send_length, 0);//发送
 			cout << "send cmd4 successfully" << endl;
 			break;
 		}
@@ -207,10 +207,10 @@ int main(int argc, char **argv)
 		case 0x05: // 入库
 		{
 			cout << "received recv5" << endl;
-			socket.warehouse();//ros发布入库话题
-			memset(socket.cmd4, 0, sizeof(socket.cmd4));//清除内存
-			send_length = socket.action4(recvbuf,socket.cmd4,recvbuf_length);//操作4
-			send(socket_cli, socket.cmd4, send_length, 0);//发送
+			robotsocket.warehouse();//ros发布入库话题
+			memset(robotsocket.cmd4, 0, sizeof(robotsocket.cmd4));//清除内存
+			send_length = robotsocket.action4(recvbuf,robotsocket.cmd4,recvbuf_length);//操作4
+			send(socket_cli, robotsocket.cmd4, send_length, 0);//发送
 			cout << "send cmd5 successfully" << endl;
 			break;
 		}
@@ -218,10 +218,10 @@ int main(int argc, char **argv)
 		case 0x06: // 前进
 		{
 			cout << "received recv6" << endl;
-			socket.forward();//ros前进速度发布函数，延时1s停止。
-			memset(socket.cmd4, 0, sizeof(socket.cmd4));//清除内存
-			send_length = socket.action4(recvbuf,socket.cmd4,recvbuf_length);//操作4
-			send(socket_cli, socket.cmd4, send_length, 0);//发送
+			robotsocket.forward();//ros前进速度发布函数，延时1s停止。
+			memset(robotsocket.cmd4, 0, sizeof(robotsocket.cmd4));//清除内存
+			send_length = robotsocket.action4(recvbuf,robotsocket.cmd4,recvbuf_length);//操作4
+			send(socket_cli, robotsocket.cmd4, send_length, 0);//发送
 			cout << "send cmd6 successfully" << endl;
 			break;
 		}
@@ -229,10 +229,10 @@ int main(int argc, char **argv)
 		case 0x07: // 后退
 		{
 			cout << "received recv7" << endl;
-			socket.back();//ros后退速度发布函数，延时1s停止。
-			memset(socket.cmd4, 0, sizeof(socket.cmd4));//清除内存
-			send_length = socket.action4(recvbuf,socket.cmd4,recvbuf_length);//操作4
-			send(socket_cli, socket.cmd4, send_length, 0);//发送
+			robotsocket.back();//ros后退速度发布函数，延时1s停止。
+			memset(robotsocket.cmd4, 0, sizeof(robotsocket.cmd4));//清除内存
+			send_length = robotsocket.action4(recvbuf,robotsocket.cmd4,recvbuf_length);//操作4
+			send(socket_cli, robotsocket.cmd4, send_length, 0);//发送
 			cout << "send cmd7 successfully" << endl;
 			break;
 		}
@@ -240,10 +240,10 @@ int main(int argc, char **argv)
 		case 0x08: // 左转
 		{
 			cout << "received recv8" << endl;
-			socket.left();//ros左转速度发布函数，延时1s停止。
-			memset(socket.cmd4, 0, sizeof(socket.cmd4));//清除内存
-			send_length = socket.action4(recvbuf,socket.cmd4,recvbuf_length);//操作4
-			send(socket_cli, socket.cmd4, send_length, 0);//发送
+			robotsocket.left();//ros左转速度发布函数，延时1s停止。
+			memset(robotsocket.cmd4, 0, sizeof(robotsocket.cmd4));//清除内存
+			send_length = robotsocket.action4(recvbuf,robotsocket.cmd4,recvbuf_length);//操作4
+			send(socket_cli, robotsocket.cmd4, send_length, 0);//发送
 			cout << "send cmd8 successfully" << endl;
 			break;
 		}
@@ -251,10 +251,10 @@ int main(int argc, char **argv)
 		case 0x09: // 右转
 		{
 			cout << "received recv9" << endl;
-			socket.right();//ros右转速度发布函数，延时1s停止。
-			memset(socket.cmd4, 0, sizeof(socket.cmd4));//清除内存
-			send_length = socket.action4(recvbuf,socket.cmd4,recvbuf_length);//操作4
-			send(socket_cli, socket.cmd4, send_length, 0);//发送
+			robotsocket.right();//ros右转速度发布函数，延时1s停止。
+			memset(robotsocket.cmd4, 0, sizeof(robotsocket.cmd4));//清除内存
+			send_length = robotsocket.action4(recvbuf,robotsocket.cmd4,recvbuf_length);//操作4
+			send(socket_cli, robotsocket.cmd4, send_length, 0);//发送
 			cout << "send cmd9 successfully" << endl;
 			break;
 		}

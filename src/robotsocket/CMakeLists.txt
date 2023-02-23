@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(socket)
+project(robotsocket)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -106,7 +106,7 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES socket
+#  LIBRARIES robotsocket
  CATKIN_DEPENDS geometry_msgs roscpp rospy std_msgs message_runtime
 #  DEPENDS system_lib
 )
@@ -128,12 +128,12 @@ add_library(
   Hello
   src/test/hello.cpp
   src/test/test1.cpp
-  include/socket/hello.h
+  include/robotsocket/hello.h
 )
 add_dependencies(Hello ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 add_library(
-  socket_h
+  robotsocket_h
   src/convert/array2char.cpp
   src/convert/hex2ascii.cpp
   src/convert/ascii2hex.cpp
@@ -141,15 +141,15 @@ add_library(
   src/recv_json.cpp
   src/action.cpp
   src/control.cpp
-  include/socket/socket.h
+  include/robotsocket/robotsocket.h
 )
-add_dependencies(socket_h ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(robotsocket_h ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 add_executable(test_json src/test/test_json.cpp)
 target_link_libraries(test_json libjsoncpp.a ${catkin_LIBRARIES})
 
-add_executable(socket src/socket.cpp)
-target_link_libraries(socket socket_h libjsoncpp.a  ${catkin_LIBRARIES})
+add_executable(robotsocket src/robotsocket.cpp)
+target_link_libraries(robotsocket robotsocket_h libjsoncpp.a  ${catkin_LIBRARIES})
 
 add_executable(server src/server.cpp)
 target_link_libraries(server ${catkin_LIBRARIES})
@@ -168,7 +168,7 @@ target_link_libraries(test_socket ${catkin_LIBRARIES})
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/socket.cpp
+#   src/${PROJECT_NAME}/robotsocket.cpp
 # )
 
 
@@ -181,7 +181,7 @@ target_link_libraries(test_socket ${catkin_LIBRARIES})
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/socket_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/robotsocket_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -245,7 +245,7 @@ target_link_libraries(test_socket ${catkin_LIBRARIES})
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_socket.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_robotsocket.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

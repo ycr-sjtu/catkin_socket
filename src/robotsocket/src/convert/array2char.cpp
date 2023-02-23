@@ -1,4 +1,4 @@
-#include "socket/socket.h"
+#include "robotsocket/robotsocket.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -6,7 +6,7 @@
 // char dbuff[]={0x7B, 0x22, 0x78, 0x22, 0x3A, 0x22, 0x37, 0x22, 0x2C, 0x22, 0x79, 0x22, 0x3A, 0x22, 0x37, 0x22, 0x2C, 0x22, 0x69, 0x64, 0x22, 0x3A, 0x22, 0x31, 0x22, 0x7D};
 // char sbuff[1024]="7B2278223A2237222C2279223A2237222C226964223A2231227D"
 
-void Socket::array2char(char *dbuff, char *sbuff)
+void RobotSocket::array2char(char *dbuff, char *sbuff)
 {
   char highByte, lowByte;
 

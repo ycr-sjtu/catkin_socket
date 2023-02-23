@@ -1,5 +1,5 @@
 {
-    "cmake.sourceDirectory": "${workspaceFolder}/src/socket",
+    "cmake.sourceDirectory": "${workspaceFolder}/src/robotsocket",
     "files.associations": {
         "iosfwd": "cpp",
         "array": "cpp",

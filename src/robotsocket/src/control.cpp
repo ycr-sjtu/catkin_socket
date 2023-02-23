@@ -1,9 +1,9 @@
-#include "socket/socket.h"
+#include "robotsocket/robotsocket.h"
 #include "ros/ros.h"
 #include "geometry_msgs/Twist.h"
 #include"turtlesim/Pose.h"
 
-void Socket::forward()
+void RobotSocket::forward()
 {
     /* 为这个进程节点创建句柄 */
     ros::NodeHandle n;
@@ -30,7 +30,7 @@ void Socket::forward()
     loop_rate.sleep();
 };
 
-void Socket::back()
+void RobotSocket::back()
 {
     /* 为这个进程节点创建句柄 */
     ros::NodeHandle n;
@@ -57,7 +57,7 @@ void Socket::back()
     loop_rate.sleep();
 };
 
-void Socket::left(){
+void RobotSocket::left(){
      /* 为这个进程节点创建句柄 */
     ros::NodeHandle n;
     /* 创建发布者对象 */
@@ -83,7 +83,7 @@ void Socket::left(){
     loop_rate.sleep();
 };
 
-void Socket::right(){
+void RobotSocket::right(){
      /* 为这个进程节点创建句柄 */
     ros::NodeHandle n;
     /* 创建发布者对象 */
@@ -109,7 +109,7 @@ void Socket::right(){
     loop_rate.sleep();
 };
 
-void Socket::stop(){
+void RobotSocket::stop(){
     ROS_INFO("stop");
     ros::NodeHandle n;
     
@@ -117,13 +117,13 @@ void Socket::stop(){
     // state=1//停止
 };
 
-void Socket::warehouse(){
+void RobotSocket::warehouse(){
     ROS_INFO("warehouse");
     // 发布入库msg
     //state=2 //入库
 };
 
-void Socket::robot_pub(double target_x,double target_y){
+void RobotSocket::robot_pub(double target_x,double target_y){
     //发布目的地msg
     //state = 0 // 作业
     cout<<"target_x:"<<target_x<<endl;
@@ -140,7 +140,7 @@ float * doPose(const turtlesim::Pose::ConstPtr &p)
     return pose;
 }
 
-void Socket::robot_sub(atomic_bool * working_signal){
+void RobotSocket::robot_sub(atomic_bool * working_signal){
     //订阅工作状态，x，y，lon，lat, state
     //if(state==1){working_signal=false}
     ros::NodeHandle n;

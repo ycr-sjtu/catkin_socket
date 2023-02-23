@@ -1,4 +1,4 @@
-#include"socket/socket.h"
+#include"robotsocket/robotsocket.h"
 #include <iostream>
 #include<string.h>
 
@@ -22,7 +22,7 @@ int hex2char(uint8_t c)
 //char hex[] = "7B2278223A2237222C2279223A2237222C226964223A2231227D"
 //char ascii[]="{"x":"7","y":"7","id":"1"}"
 
-int Socket::hex2ascii(char* hex, char* ascii)
+int RobotSocket::hex2ascii(char* hex, char* ascii)
 {
     int hexLen = ssstrlen(hex);
     int asciiLen = 0;

@@ -12,7 +12,7 @@ Json::FastWriter fwriter;
 Json::StyledWriter swriter;
 Json::Value array;
  
-std::ifstream ifs("src/socket/src/test/waypoint.json");//open file example.json
+std::ifstream ifs("src/robotsocket/src/test/waypoint.json");//open file example.json
 
 if(!reader.parse(ifs, root)){
    // fail to parse
@@ -32,12 +32,12 @@ else{
  
 root["array"] = array;
 std::string str = fwriter.write(array);
-std::ofstream ofs("src/socket/src/test/example_fast_writer.json");
+std::ofstream ofs("src/robotsocket/src/test/example_fast_writer.json");
 ofs << str;
 ofs.close();
  
 str = swriter.write(root);
-ofs.open("src/socket/src/test/example_styled_writer.json");
+ofs.open("src/robotsocket/src/test/example_styled_writer.json");
 ofs << str;
 ofs.close();
 return 0;
