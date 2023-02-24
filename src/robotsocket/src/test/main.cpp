@@ -3,7 +3,7 @@
 #include <thread>             // std::thread
 #include <mutex>              // std::mutex, std::unique_lock
 #include <condition_variable> // std::condition_variable
-
+#include"socket_state/socketstate.h"
 std::mutex mtx;
 std::condition_variable produce,consume;
 

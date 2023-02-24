@@ -67,7 +67,13 @@
         "core": "cpp",
         "csignal": "cpp",
         "ros.h": "c",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "test_sub": "cpp"
     },
-    "C_Cpp.errorSquiggles": "enabled"
+    "C_Cpp.errorSquiggles": "disabled",
+    "python.autoComplete.extraPaths": [
+        "/home/ycr/catkin_socket/devel/lib/python2.7/dist-packages",
+        "/home/ycr/lio/devel/lib/python2.7/dist-packages",
+        "/opt/ros/melodic/lib/python2.7/dist-packages"
+    ]
 }

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(robotsocket)
+project(socket_state)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -8,12 +8,10 @@ project(robotsocket)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  rospy
-  std_msgs
   geometry_msgs
-  turtlesim
-  socket_state
+  roscpp
+  std_msgs
+  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -50,11 +48,10 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   example.msg
-#   socketstate.msg
-# )
+add_message_files(
+  FILES
+  socketstate.msg
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -71,10 +68,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  geometry_msgs   std_msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -108,7 +105,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES robotsocket
- CATKIN_DEPENDS geometry_msgs roscpp rospy std_msgs message_runtime 
+ CATKIN_DEPENDS geometry_msgs roscpp std_msgs message_runtime
 #  DEPENDS system_lib
 )
 
@@ -119,69 +116,14 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-include
+# include
   ${catkin_INCLUDE_DIRS}
-  # /usr/include/
 )
-
-# 增加了一个自定义的库
-add_library(
-  Hello
-  src/test/hello.cpp
-  src/test/test1.cpp
-  include/robotsocket/hello.h
-)
-add_dependencies(Hello ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-add_library(
-  robotsocket_h
-  src/convert/array2char.cpp
-  src/convert/hex2ascii.cpp
-  src/convert/ascii2hex.cpp
-  src/convert/char2array.cpp
-  src/recv_json.cpp
-  src/action.cpp
-  src/control.cpp
-  include/robotsocket/robotsocket.h
-)
-add_dependencies(robotsocket_h ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-add_executable(test_json src/test/test_json.cpp)
-target_link_libraries(test_json libjsoncpp.a ${catkin_LIBRARIES})
-
-add_executable(robotsocket src/robotsocket.cpp)
-target_link_libraries(robotsocket robotsocket_h libjsoncpp.a  ${catkin_LIBRARIES})
-
-add_executable(server src/server.cpp)
-target_link_libraries(server ${catkin_LIBRARIES})
-
-add_executable(helloworld src/test/helloworld.cpp)
-target_link_libraries(helloworld ${catkin_LIBRARIES})
-
-add_executable(hello2 src/test/hello2.cpp)
-target_link_libraries(hello2 Hello ${catkin_LIBRARIES})
-
-add_executable(test_socket src/test/test_socket.cpp)
-target_link_libraries(test_socket ${catkin_LIBRARIES})
-
-add_executable(test_pub src/test/test_pub.cpp)
-target_link_libraries(test_pub ${catkin_LIBRARIES})
-
-add_executable(test_sub src/test/test_sub.cpp)
-target_link_libraries(test_sub ${catkin_LIBRARIES})
-
-# add_executable(test_pub1 src/test/test_pub1.cpp)
-# target_link_libraries(test_pub1 ${catkin_LIBRARIES})
-
-# add_executable(control src/control.cpp)
-# target_link_libraries(control ${catkin_LIBRARIES})
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/robotsocket.cpp
+#   src/${PROJECT_NAME}/socket_state.cpp
 # )
-
-
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -191,7 +133,7 @@ target_link_libraries(test_sub ${catkin_LIBRARIES})
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/robotsocket_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/socket_state_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -255,7 +197,7 @@ target_link_libraries(test_sub ${catkin_LIBRARIES})
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_robotsocket.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_socket_state.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
