@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   message_generation
   turtlesim
+  message_filters
 )
 
 ## System dependencies are found with CMake's conventions
@@ -52,7 +53,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
-  State.msg
+  state.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -162,6 +163,15 @@ target_link_libraries(hello2 Hello ${catkin_LIBRARIES})
 
 add_executable(test_socket src/test/test_socket.cpp)
 target_link_libraries(test_socket ${catkin_LIBRARIES})
+
+add_executable(test_pub src/test/test_pub.cpp)
+target_link_libraries(test_pub ${catkin_LIBRARIES})
+
+add_executable(test_sub src/test/test_sub.cpp)
+target_link_libraries(test_sub ${catkin_LIBRARIES})
+
+add_executable(test_multisub src/test/test_multisub.cpp)
+target_link_libraries(test_multisub ${catkin_LIBRARIES})
 
 # add_executable(control src/control.cpp)
 # target_link_libraries(control ${catkin_LIBRARIES})

@@ -35,7 +35,7 @@ using namespace std;
         char cmd2[1024];// 发送给服务器的指令
         void recv2_json(char * str,char * myJsonChar);// 02指令的json处理函数
         void recv2_json_start(char * str,char * myJsonChar, double * target_x, double * target_y);// 02指令的json处理函数
-        int action2_start(char * recv2, char * recv2_send,int recv2_length, double * x, double * y);   //02指令操作函数
+        int action2_start(char * recv2, char * recv2_send,int recv2_length, double * target_x, double * target_y);   //02指令操作函数
         int action2(char * recv2, char * recv2_send,int recv2_length);   //02指令操作函数
          int action2_over(char * recv2, char * recv2_send,int recv2_length);   //02指令操作函数          
 
@@ -71,7 +71,9 @@ using namespace std;
         //发布目的地给机器人
         void robot_pub(double target_x,double target_y);
         //订阅机器人参数x y lon lat state
-        void robot_sub(atomic_bool * working_signal);
+        void robot_sub(double * x, double * y, double * lon, double * lat);
+
+        void state_sub(atomic_bool * working_signal);
 
  };
 

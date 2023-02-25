@@ -116,14 +116,15 @@ int main(int argc, char **argv)
 		case 0x02: // 运动指令
 		{
 			//先把xy坐标发布给机器人
-			//机器人收到坐标，改变状态为1，开始执行作业指令，while循环开始
-			//机器人作业结束，发布状态为0，while循环结束，发布结束指令。
+			//机器人收到坐标，改变状态为0，开始执行作业指令，while循环开始
+			//机器人作业结束，发布状态为1，while循环结束，发布结束指令。
 			//停止的指令优先级最高，点击停止的时候，状态改变，所以还是要多线程，同时监听状态改变
 			std::atomic<bool> send_signal(true);
 			std::atomic<bool> listen_signal(true);
 			robotsocket.working_signal = false;//true工作结束，false正在工作
 			double target_x = 0;
 			double target_y = 0;
+			double x,y,lon,lat;
 			
 			//第一次发送
 			cout << "received recv2" << endl;
@@ -131,10 +132,11 @@ int main(int argc, char **argv)
 			
 			//修改：输出x,y,lon,lat,state
 			//写到action里面，每个action都需要sub
-			//robot socket.robot_sub(&robotsocket.working_signal);
+			robotsocket.robot_sub(&x, &y, &lon, &lat);
 			
+			// 修改:用数组传target[],用数组传位置position[]
 			send_length = robotsocket.action2_start(recvbuf,robotsocket.cmd2,recvbuf_length,&target_x,&target_y);//操作2
-			send(socket_cli, robotsocket.cmd2, send_length, 0);//发送
+			// send(socket_cli, robotsocket.cmd2, send_length, 0);//发送
 			cout << "send cmd2 successfully" << endl;
 			robotsocket.robot_pub(target_x,target_y);//发布目的地给机器人
 			
@@ -169,6 +171,10 @@ int main(int argc, char **argv)
 					}
 				}
 			});
+
+			// 修改:
+			// 线程3:监听工作是否完成,state是否等于1
+			// thread listen_state
 			
 			//线程join
 			send_cmd.join();
@@ -199,7 +205,7 @@ int main(int argc, char **argv)
 			robotsocket.stop();//ros发布停止话题
 			memset(robotsocket.cmd4, 0, sizeof(robotsocket.cmd4));//清除内存
 			send_length = robotsocket.action4(recvbuf,robotsocket.cmd4,recvbuf_length);//操作4
-			send(socket_cli, robotsocket.cmd4, send_length, 0);//发送
+			// send(socket_cli, robotsocket.cmd4, send_length, 0);//发送
 			cout << "send cmd4 successfully" << endl;
 			break;
 		}
@@ -254,7 +260,7 @@ int main(int argc, char **argv)
 			robotsocket.right();//ros右转速度发布函数，延时1s停止。
 			memset(robotsocket.cmd4, 0, sizeof(robotsocket.cmd4));//清除内存
 			send_length = robotsocket.action4(recvbuf,robotsocket.cmd4,recvbuf_length);//操作4
-			send(socket_cli, robotsocket.cmd4, send_length, 0);//发送
+			// send(socket_cli, robotsocket.cmd4, send_length, 0);//发送
 			cout << "send cmd9 successfully" << endl;
 			break;
 		}
