@@ -14,8 +14,7 @@
 
 #include "robotsocket/robotsocket.h"
 #include <thread>
-#include <mutex>
-#include<atomic>
+#include <atomic>
 
 #define MYPORT 3311	  // 端口号
 #define BUF_SIZE 1024 // 数据缓冲区最大长度
@@ -31,10 +30,10 @@ int main(int argc, char **argv)
 {
 	//初始化ros节点
 	ros::init(argc, argv, "robotsocket");
+	ros::NodeHandle n;
 
 	char recvbuf[BUF_SIZE];
 	char recvbuf2[BUF_SIZE];
-	char sendbuf[BUF_SIZE];
 
 	/*
 	 *@fuc: socket()创建套节字
@@ -67,22 +66,21 @@ int main(int argc, char **argv)
 	}
 	else
 		std::cout << "connected successfullly!" << std::endl;
+	
+	RobotSocket robotsocket;	
+	
+	// 线程1：监听机器人ros消息
+	thread sub([&]{
+		robotsocket.robot_sub();
+	});
 
-	while (ros::ok)
+	sleep(1);
+
+	while (ros::ok())
 	{
-		RobotSocket robotsocket;
-		
-		// 线程1：监听服务器消息
-		thread recv_cmd([&]{
-			// 使用recv()函数来接收服务器发送的消息
-			recvbuf_length = recv(socket_cli, recvbuf, sizeof(recvbuf), 0);
-		});
+		// 使用recv()函数来接收服务器发送的消息
+		recvbuf_length = recv(socket_cli, recvbuf, sizeof(recvbuf), 0);
 
-		// 线程2：监听机器人ros消息
-		thread sub([&]{
-			robotsocket.robot_sub();
-		});
-		
 		// 显示接受到的消息recvbuf
 		cout << "recvbuf:";
 		robotsocket.display(recvbuf, recvbuf_length);
@@ -101,10 +99,11 @@ int main(int argc, char **argv)
 		char recv8[] = {0x00, 0x00, 0x00, 0x00, 0x08};
 		char recv9[] = {0x00, 0x00, 0x00, 0x00, 0x09};
 
-		for(int i =0;i<sizeof(recv2);i++){
-			recvbuf[i]=recv2[i];
-		};
-		recvbuf_length=sizeof(recv2);
+		// for(int i =0;i<sizeof(recv2);i++){
+		// 	recvbuf[i]=recv2[i];
+		// };
+		// recvbuf_length=sizeof(recv2);
+		// recvbuf[4] = recv6[4];
 
 		// 匹配指令内容
 		switch (recvbuf[4])
@@ -126,7 +125,6 @@ int main(int argc, char **argv)
 			//停止的指令优先级最高，点击停止的时候，状态改变，所以还是要多线程，同时监听状态改变
 			robotsocket.send_signal = true;
 			robotsocket.listen_signal = true;
-			robotsocket.sub_signal = true;
 			robotsocket.working_signal = true;
 
 			//第一次发送
@@ -150,7 +148,6 @@ int main(int argc, char **argv)
 					if(robotsocket.working_signal == false){
 						robotsocket.listen_signal = false; // 监听停止
 						robotsocket.send_signal = false; // 发送停止
-						robotsocket.sub_signal = false; // 订阅停止
 					}
 				}
 				cout<<"thread1 killed"<<endl;
@@ -159,11 +156,11 @@ int main(int argc, char **argv)
 			// 线程2:监听停止信号
 			thread listen_cmd([&]{
 				while(robotsocket.listen_signal.load()){
+					recv(socket_cli, recvbuf2, sizeof(recvbuf2), MSG_DONTWAIT); // recv()非阻塞
 					//如果有停止信号
 					if(recvbuf2[4]==0x04){
 						robotsocket.listen_signal = false; // 监听停止
 						robotsocket.send_signal = false; // 发送停止
-						robotsocket.sub_signal = false; // 订阅停止
 						robotsocket.stop(); //ros发布停止话题
 					}
 				}
@@ -176,7 +173,7 @@ int main(int argc, char **argv)
 
 			//结束发送
 			memset(robotsocket.cmd2, 0, sizeof(robotsocket.cmd2));//清除内存
-			send_length = robotsocket.action2_over(recvbuf,robotsocket.cmd2,recvbuf_length);//操作2_over
+			send_length = robotsocket.action2_over(recvbuf,robotsocket.cmd2,recvbuf_length);// 操作2_over
 			// send(socket_cli, robotsocket.cmd2, send_length, 0);//发送
 			cout << "send cmd2_over successfully" << endl;
 			break;
@@ -263,10 +260,10 @@ int main(int argc, char **argv)
 			break;
 		}
 		
-		// 加入线程
-		recv_cmd.join();
-		sub.join();
 	}
+	
+	// 加入线程
+	sub.join();
 	
 	/*
 	 *@fuc: 关闭连接

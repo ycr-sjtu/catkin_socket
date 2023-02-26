@@ -139,9 +139,9 @@ add_library(
   src/convert/hex2ascii.cpp
   src/convert/ascii2hex.cpp
   src/convert/char2array.cpp
-  src/recv_json.cpp
-  src/action.cpp
-  src/control.cpp
+  src/execute/recv_json.cpp
+  src/execute/action.cpp
+  src/execute/control.cpp
   include/robotsocket/robotsocket.h
 )
 add_dependencies(robotsocket_h ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
@@ -152,8 +152,8 @@ target_link_libraries(test_json libjsoncpp.a ${catkin_LIBRARIES})
 add_executable(robotsocket src/robotsocket.cpp)
 target_link_libraries(robotsocket robotsocket_h libjsoncpp.a  ${catkin_LIBRARIES})
 
-add_executable(server src/server.cpp)
-target_link_libraries(server ${catkin_LIBRARIES})
+add_executable(test_server src/test/test_server.cpp)
+target_link_libraries(test_server ${catkin_LIBRARIES})
 
 add_executable(helloworld src/test/helloworld.cpp)
 target_link_libraries(helloworld ${catkin_LIBRARIES})
@@ -173,8 +173,6 @@ target_link_libraries(test_sub ${catkin_LIBRARIES})
 add_executable(test_multisub src/test/test_multisub.cpp)
 target_link_libraries(test_multisub ${catkin_LIBRARIES})
 
-# add_executable(control src/control.cpp)
-# target_link_libraries(control ${catkin_LIBRARIES})
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}

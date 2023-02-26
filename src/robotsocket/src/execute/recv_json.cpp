@@ -12,7 +12,7 @@ void RobotSocket::recv2_json(char *str, char *myJsonChar)
 {
 
     // jsoncpp 解析json字符串
-    cout << "收到的消息为: " << str << endl;
+    // cout << "recv_json: " << str << endl;
 
     Json::Reader reader(Json::Features::strictMode());
     Json::Value _root;
@@ -20,11 +20,7 @@ void RobotSocket::recv2_json(char *str, char *myJsonChar)
 
     if (!reader.parse(sBuffer, _root))
     {
-        cout << "json解析错误" << endl;
-    }
-    else
-    {
-        cout << "json解析成功" << endl;
+        cout << "json error" << endl;
     }
 
     // double转string
@@ -60,14 +56,14 @@ void RobotSocket::recv2_json(char *str, char *myJsonChar)
         myJsonChar[i] = myJsonStr[i];
     }
     myJsonChar[myJsonStr.length() - 1] = '\0';
-    printf("json_char: %s\n", myJsonChar);
+    printf("send_json: %s\n", myJsonChar);
 };
 
 void RobotSocket::recv2_json_start(char *str, char *myJsonChar)
 {
 
     // jsoncpp 解析json字符串
-    cout << "收到的消息为: " << str << endl;
+    cout << "recv_json: " << str << endl;
 
     Json::Reader reader(Json::Features::strictMode());
     Json::Value _root;
@@ -75,11 +71,7 @@ void RobotSocket::recv2_json_start(char *str, char *myJsonChar)
 
     if (!reader.parse(sBuffer, _root))
     {
-        cout << "json解析错误" << endl;
-    }
-    else
-    {
-        cout << "json解析成功" << endl;
+        cout << "json error" << endl;
     }
     
     // double转string
@@ -115,7 +107,7 @@ void RobotSocket::recv2_json_start(char *str, char *myJsonChar)
         myJsonChar[i] = myJsonStr[i];
     }
     myJsonChar[myJsonStr.length() - 1] = '\0';
-    printf("json_char: %s\n", myJsonChar);
+    printf("send_json: %s\n", myJsonChar);
 
     string target_x = _root.get("x","").asString();
     string target_y = _root.get("y","").asString();
@@ -162,7 +154,7 @@ void RobotSocket::recv3_json(char *myJsonChar)
         myJsonChar[i] = myJsonStr[i];
     }
     myJsonChar[myJsonStr.length() - 1] = '\0';
-    printf("json_char: %s\n", myJsonChar);
+    printf("send_json: %s\n", myJsonChar);
 };
 
 /* 04指令的json处理函数
@@ -203,6 +195,6 @@ void RobotSocket::recv4_json(char *myJsonChar)
         myJsonChar[i] = myJsonStr[i];
     }
     myJsonChar[myJsonStr.length() - 1] = '\0';
-    printf("json_char: %s\n", myJsonChar);
+    printf("send_json: %s\n", myJsonChar);
 };
 

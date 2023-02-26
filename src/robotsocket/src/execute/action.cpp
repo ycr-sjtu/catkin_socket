@@ -55,8 +55,8 @@ int RobotSocket::action2_start(char *recv2, char *recv2_send, int recv2_length)
         recv2_send[i + 7] = recv2_array[i];
     };
 
-    cout << "cmd2_start:";
-    display(recv2_send, sizeof(cmd2_head) + strlen(recv2_array));
+    // cout << "cmd2_start:";
+    // display(recv2_send, sizeof(cmd2_head) + strlen(recv2_array));
 
     return sizeof(cmd2_head) + strlen(recv2_array);
 };
@@ -113,8 +113,8 @@ int RobotSocket::action2(char *recv2, char *recv2_send, int recv2_length)
         recv2_send[i + 7] = recv2_array[i];
     };
 
-    cout << "cmd2:";
-    display(recv2_send, sizeof(cmd2_head) + strlen(recv2_array));
+    // cout << "cmd2:";
+    // display(recv2_send, sizeof(cmd2_head) + strlen(recv2_array));
 
     return sizeof(cmd2_head) + strlen(recv2_array);
 };
@@ -171,8 +171,8 @@ int RobotSocket::action2_over(char *recv2, char *recv2_send, int recv2_length)
         recv2_send[i + 7] = recv2_array[i];
     };
 
-    cout << "cmd2_over:";
-    display(recv2_send, sizeof(cmd2_over) + strlen(recv2_array));
+    // cout << "cmd2_over:";
+    // display(recv2_send, sizeof(cmd2_over) + strlen(recv2_array));
 
     return sizeof(cmd2_over) + strlen(recv2_array);
 };
@@ -203,8 +203,8 @@ int RobotSocket::action3(char *recv3, char *recv3_send, int recv3_length)
         recv3_send[i + 6] = recv3_array[i];
     };
 
-    cout << "cmd3:";
-    display(recv3_send, sizeof(cmd3_head) + strlen(recv3_array));
+    // cout << "cmd3:";
+    // display(recv3_send, sizeof(cmd3_head) + strlen(recv3_array));
 
     return sizeof(cmd3_head) + strlen(recv3_array);
 };
@@ -235,8 +235,8 @@ int RobotSocket::action4(char *recv4, char *recv4_send, int recv4_length)
         recv4_send[i + 6] = recv4_array[i];
     };
 
-    cout << "cmd4-9:";
-    display(recv4_send, sizeof(cmd4_head) + strlen(recv4_array));
+    // cout << "cmd4-9:";
+    // display(recv4_send, sizeof(cmd4_head) + strlen(recv4_array));
 
     return sizeof(cmd4_head) + strlen(recv4_array);
 };
