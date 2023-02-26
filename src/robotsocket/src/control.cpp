@@ -129,64 +129,48 @@ void RobotSocket::warehouse(){
 };
 
 //发布目的地msg, state = 0 作业
-void RobotSocket::robot_pub(double target_x,double target_y){
+void RobotSocket::robot_pub(){
     ROS_INFO("working");
     ros::NodeHandle n;
     ros::Publisher publish = n.advertise<robotsocket::state>("/state", 10, true);
     robotsocket::state msg;
-     msg.x = target_x;
-    msg.y = target_y;
+    msg.x = target[0];
+    msg.y = target[1];
     msg.state = 0;
     while(publish.getNumSubscribers()<1);
     publish.publish(msg);
     ros::Duration(0.5).sleep();
 }
 
-double sub_x,sub_y,sub_lon,sub_lat;
-
-void subscriberCallback(const sensor_msgs::NavSatFix::ConstPtr& gps){
-        printf("latitude=%.10f, longitude=%.10f\n",gps->latitude,gps->longitude);
-        sub_lat = gps->latitude;
-        sub_lon = gps->longitude;
+void RobotSocket::subscriberCallback_gps(const sensor_msgs::NavSatFix::ConstPtr& gps){
+        // printf("latitude=%.10f, longitude=%.10f\n",gps->latitude,gps->longitude);
+        position[2] = gps->longitude;
+        position[3] = gps->latitude;
 }
 
-void subscriberCallback2(const nav_msgs::Path::ConstPtr& path){
-        printf("x=%f, y=%f\n",path->poses.back().pose.position.x,path->poses.back().pose.position.y);
-        sub_x = path->poses.back().pose.position.x;
-        sub_y = path->poses.back().pose.position.y;
+void RobotSocket::subscriberCallback_path(const nav_msgs::Path::ConstPtr& path){
+        // printf("x=%f, y=%f\n",path->poses.back().pose.position.x,path->poses.back().pose.position.y);
+        position[0] = path->poses.back().pose.position.x;
+        position[1] = path->poses.back().pose.position.y;
+}
+
+void RobotSocket::subscriberCallback_state(const robotsocket::state::ConstPtr& msg){
+    // printf("msg : %d\n",msg->state);
+    state = msg->state;
+    if(state ==1){
+        working_signal = false;
+    }
 }
 
 //订阅x，y，lon，lat, state
-void RobotSocket::robot_sub(double * x, double * y, double * lon, double * lat){
+void RobotSocket::robot_sub(){
     ros::NodeHandle n;
-    ros::Subscriber subscriber = n.subscribe("/fix", 10, &subscriberCallback);
-    ros::Subscriber subscriber2 = n.subscribe("/gps_path", 10, &subscriberCallback2);
-    ros::spin();
-    * x = sub_x;
-    * y = sub_y;
-    * lon = sub_lon;
-    * lat = sub_lat;
-}
-
-int state;
-
-void subscriberCallback_state(const robotsocket::state::ConstPtr& msg){
-    state = msg->state;
-}
-
-//订阅工作状态state
-void RobotSocket::state_sub(atomic_bool * working_signal){   
-    int state=0;
-    ros::NodeHandle n;
-    ros::Subscriber subscriber = n.subscribe("/state", 10, &subscriberCallback_state);
+    ros::Subscriber subscriber = n.subscribe("/fix", 10, &RobotSocket::subscriberCallback_gps,this);
+    ros::Subscriber subscriber2 = n.subscribe("/gps_path", 10,&RobotSocket::subscriberCallback_path,this);
+    ros::Subscriber subscriber3 = n.subscribe("/state", 10, &RobotSocket::subscriberCallback_state,this);
     ros::Rate loop_rate(10);
-    while (ros::ok())
-        {
-            loop_rate.sleep();
-            ros::spinOnce();
-            if(state==1){
-                * working_signal=false;
-                break;
-            }
-        }
+    while(working_signal){
+        ros::spinOnce();
+        loop_rate.sleep();
+    }
 }

@@ -3,7 +3,7 @@
 
 using namespace std;
 
-int RobotSocket::action2_start(char *recv2, char *recv2_send, int recv2_length, double * target_x, double * target_y)
+int RobotSocket::action2_start(char *recv2, char *recv2_send, int recv2_length)
 {
 
     // 显示recv2的内容
@@ -33,7 +33,7 @@ int RobotSocket::action2_start(char *recv2, char *recv2_send, int recv2_length, 
     // 读取收到的json指令，生成回复内容
     char recv2_json[1024];
     memset(recv2_json, 0, sizeof(recv2_json));
-    (this->recv2_json_start)(recv2_ascii, recv2_json, target_x, target_y);
+    (this->recv2_json_start)(recv2_ascii, recv2_json);
 
     // ascii转16进制
     char recv2_hex[1024];

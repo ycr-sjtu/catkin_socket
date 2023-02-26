@@ -27,14 +27,26 @@ void RobotSocket::recv2_json(char *str, char *myJsonChar)
         cout << "json解析成功" << endl;
     }
 
+    // double转string
+    stringstream position_x, position_y, position_lon, position_lat;
+    string str_x, str_y, str_lon, str_lat;
+    position_x << setprecision(12) << position[0];
+    position_y << setprecision(12) << position[1];
+    position_lon << setprecision(11) << position[2];
+    position_lat << setprecision(12) << position[3];
+    str_x = position_x.str();
+    str_y = position_y.str();
+    str_lon = position_lon.str();
+    str_lat = position_lat.str();
+
     // jsoncpp 初始化json对象
     Json::Value myJson;
     myJson["runningSpeed"] = "1";
     myJson["recoveryRate"] = "60.3";
-    myJson["x"] = "1";
-    myJson["y"] = "1";
-    myJson["lon"] = "1";
-    myJson["lat"] = "1";
+    myJson["x"] = str_x;
+    myJson["y"] = str_y;
+    myJson["lon"] = str_lon;
+    myJson["lat"] = str_lat;
     myJson["id"] = _root["id"];
     myJson["status"] = "01";
 
@@ -51,9 +63,7 @@ void RobotSocket::recv2_json(char *str, char *myJsonChar)
     printf("json_char: %s\n", myJsonChar);
 };
 
-// 修改：
-// 输出double target_x, double target_y，输入x, y, lon, lat
-void RobotSocket::recv2_json_start(char *str, char *myJsonChar, double * target_x, double * target_y)
+void RobotSocket::recv2_json_start(char *str, char *myJsonChar)
 {
 
     // jsoncpp 解析json字符串
@@ -71,15 +81,27 @@ void RobotSocket::recv2_json_start(char *str, char *myJsonChar, double * target_
     {
         cout << "json解析成功" << endl;
     }
+    
+    // double转string
+    stringstream position_x, position_y, position_lon, position_lat;
+    string str_x, str_y, str_lon, str_lat;
+    position_x << setprecision(12) << position[0];
+    position_y << setprecision(12) << position[1];
+    position_lon << setprecision(11) << position[2];
+    position_lat << setprecision(12) << position[3];
+    str_x = position_x.str();
+    str_y = position_y.str();
+    str_lon = position_lon.str();
+    str_lat = position_lat.str();
 
     // jsoncpp 初始化json对象
     Json::Value myJson;
     myJson["runningSpeed"] = "1";
     myJson["recoveryRate"] = "60.3";
-    myJson["x"] = "1";
-    myJson["y"] = "1";
-    myJson["lon"] = "1";
-    myJson["lat"] = "1";
+    myJson["x"] = str_x;
+    myJson["y"] = str_y;
+    myJson["lon"] = str_lon;
+    myJson["lat"] = str_lat;
     myJson["id"] = _root["id"];
     myJson["status"] = "01";
 
@@ -95,11 +117,11 @@ void RobotSocket::recv2_json_start(char *str, char *myJsonChar, double * target_
     myJsonChar[myJsonStr.length() - 1] = '\0';
     printf("json_char: %s\n", myJsonChar);
 
-    string x = _root.get("x","").asString();
-    string y = _root.get("y","").asString();
+    string target_x = _root.get("x","").asString();
+    string target_y = _root.get("y","").asString();
 
-    * target_x = std::stod(x);
-    * target_y = std::stod(y);
+    target[0] = std::stod(target_x);
+    target[1] = std::stod(target_y);
 };
 
 /* 03指令的json处理函数
@@ -108,15 +130,26 @@ void RobotSocket::recv2_json_start(char *str, char *myJsonChar, double * target_
 
 void RobotSocket::recv3_json(char *myJsonChar)
 {
+    // double转string
+    stringstream position_x, position_y, position_lon, position_lat;
+    string str_x, str_y, str_lon, str_lat;
+    position_x << setprecision(12) << position[0];
+    position_y << setprecision(12) << position[1];
+    position_lon << setprecision(11) << position[2];
+    position_lat << setprecision(12) << position[3];
+    str_x = position_x.str();
+    str_y = position_y.str();
+    str_lon = position_lon.str();
+    str_lat = position_lat.str();
 
     // jsoncpp 初始化json对象
     Json::Value myJson;
     myJson["runningSpeed"] = "1";
     myJson["recoveryRate"] = "60";
-    myJson["x"] = "0";
-    myJson["y"] = "0";
-    myJson["lon"] = "0";
-    myJson["lat"] = "0";
+    myJson["x"] = str_x;
+    myJson["y"] = str_y;
+    myJson["lon"] = str_lon;
+    myJson["lat"] = str_lat;
     myJson["status"] = "02";
 
     // jsoncpp json对象转换成字符串
@@ -138,14 +171,26 @@ void RobotSocket::recv3_json(char *myJsonChar)
 
 void RobotSocket::recv4_json(char *myJsonChar)
 {
+    // double转string
+    stringstream position_x, position_y, position_lon, position_lat;
+    string str_x, str_y, str_lon, str_lat;
+    position_x << setprecision(12) << position[0];
+    position_y << setprecision(12) << position[1];
+    position_lon << setprecision(11) << position[2];
+    position_lat << setprecision(12) << position[3];
+    str_x = position_x.str();
+    str_y = position_y.str();
+    str_lon = position_lon.str();
+    str_lat = position_lat.str();
+
     // jsoncpp 初始化json对象
     Json::Value myJson;
     myJson["runningSpeed"] = "8";
     myJson["recoveryRate"]= "0";
-    myJson["x"] = "5";
-    myJson["y"] = "5";
-    myJson["lon"] = "5";
-    myJson["lat"] = "5";
+    myJson["x"] = str_x;
+    myJson["y"] = str_y;
+    myJson["lon"] = str_lon;
+    myJson["lat"] = str_lat;
     myJson["status"] = "01";
 
     // jsoncpp json对象转换成字符串

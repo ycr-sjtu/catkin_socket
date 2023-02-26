@@ -1,9 +1,12 @@
 #ifndef ROBOTSOCKET_H
 #define ROBOTSOCKET_H
 #pragma once
-#include<iostream>
-#include<string.h>
-#include<atomic>
+#include <iostream>
+#include <string.h>
+#include <atomic>
+#include "robotsocket/state.h"
+#include "sensor_msgs/NavSatFix.h"
+#include "nav_msgs/Path.h"
 using namespace std;
  
  class RobotSocket{
@@ -34,8 +37,8 @@ using namespace std;
         const char cmd2_over[7] = {0x00, 0x10, 0x06, 0x07, 0x30, 0x01, 0x01};
         char cmd2[1024];// 发送给服务器的指令
         void recv2_json(char * str,char * myJsonChar);// 02指令的json处理函数
-        void recv2_json_start(char * str,char * myJsonChar, double * target_x, double * target_y);// 02指令的json处理函数
-        int action2_start(char * recv2, char * recv2_send,int recv2_length, double * target_x, double * target_y);   //02指令操作函数
+        void recv2_json_start(char * str,char * myJsonChar);// 02指令的json处理函数
+        int action2_start(char * recv2, char * recv2_send,int recv2_length);   //02指令操作函数
         int action2(char * recv2, char * recv2_send,int recv2_length);   //02指令操作函数
          int action2_over(char * recv2, char * recv2_send,int recv2_length);   //02指令操作函数          
 
@@ -66,14 +69,27 @@ using namespace std;
         void stop();// 停止
         void warehouse();// 入库
 
-        atomic_bool working_signal;//true工作结束，false正在工作
+        atomic_bool working_signal;
+        atomic_bool send_signal;
+        atomic_bool listen_signal;
+        atomic_bool sub_signal;
+        
+        double target[2]; // target_x, target_y
+        double position[4]; // x,y,lon,lat
 
-        //发布目的地给机器人
-        void robot_pub(double target_x,double target_y);
+        //发布目的地给机器人target_x, target_y
+        void robot_pub();
         //订阅机器人参数x y lon lat state
-        void robot_sub(double * x, double * y, double * lon, double * lat);
-
+        void robot_sub();
+        
+        atomic_int state;
+        //订阅机器人状态
         void state_sub(atomic_bool * working_signal);
+        // 订阅回调函数
+        void subscriberCallback_state(const robotsocket::state::ConstPtr& msg);
+        void subscriberCallback_gps(const sensor_msgs::NavSatFix::ConstPtr& gps);
+        void subscriberCallback_path(const nav_msgs::Path::ConstPtr& path);
+
 
  };
 

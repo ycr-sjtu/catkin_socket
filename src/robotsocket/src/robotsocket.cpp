@@ -71,9 +71,10 @@ int main(int argc, char **argv)
 
 	while (ros::ok)
 	{
-
 		RobotSocket robotsocket;
-		mutex mtx;
+
+		// 修改：
+		// recv做子线程1，sub做线程2
 
 		// 使用recv()函数来接收服务器发送的消息
 		recvbuf_length = recv(socket_cli, recvbuf, sizeof(recvbuf), 0);
@@ -119,73 +120,78 @@ int main(int argc, char **argv)
 			//机器人收到坐标，改变状态为0，开始执行作业指令，while循环开始
 			//机器人作业结束，发布状态为1，while循环结束，发布结束指令。
 			//停止的指令优先级最高，点击停止的时候，状态改变，所以还是要多线程，同时监听状态改变
-			std::atomic<bool> send_signal(true);
-			std::atomic<bool> listen_signal(true);
-			robotsocket.working_signal = false;//true工作结束，false正在工作
-			double target_x = 0;
-			double target_y = 0;
-			double x,y,lon,lat;
+			robotsocket.send_signal = true;
+			robotsocket.listen_signal = true;
+			robotsocket.sub_signal = true;
+			robotsocket.working_signal = true;
 			
+			// 线程0:监听sub
+			thread listen_sub([&]{
+				while(robotsocket.sub_signal.load()){
+					robotsocket.robot_sub();
+				}
+				cout<<"thread0 over"<<endl;
+			});
+			sleep(1);
+
 			//第一次发送
 			cout << "received recv2" << endl;
 			memset(robotsocket.cmd2, 0, sizeof(robotsocket.cmd2));//清除内存
-			
-			//修改：输出x,y,lon,lat,state
-			//写到action里面，每个action都需要sub
-			robotsocket.robot_sub(&x, &y, &lon, &lat);
-			
-			// 修改:用数组传target[],用数组传位置position[]
-			send_length = robotsocket.action2_start(recvbuf,robotsocket.cmd2,recvbuf_length,&target_x,&target_y);//操作2
+			send_length = robotsocket.action2_start(recvbuf,robotsocket.cmd2,recvbuf_length);//操作2
 			// send(socket_cli, robotsocket.cmd2, send_length, 0);//发送
 			cout << "send cmd2 successfully" << endl;
-			robotsocket.robot_pub(target_x,target_y);//发布目的地给机器人
-			
+			robotsocket.robot_pub();//发布目的地给机器人
 			
 			// 线程1:发送
 			thread send_cmd([&]{
-				while(send_signal.load()){
+				while(robotsocket.send_signal.load()){
 					//发送
 					memset(robotsocket.cmd2, 0, sizeof(robotsocket.cmd2));//清除内存
 					send_length = robotsocket.action2(recvbuf,robotsocket.cmd2,recvbuf_length);//操作2
-					send(socket_cli, robotsocket.cmd2, send_length, 0);//发送
+					// send(socket_cli, robotsocket.cmd2, send_length, 0);//发送
 					cout << "send cmd2 successfully" << endl;
 					sleep(1);
 					//如果有工作完成信号
-					if(robotsocket.working_signal){
-						listen_signal = false; // 监听停止
-						send_signal = false; // 发送停止
-						robotsocket.stop(); //ros发布停止话题
+					if(robotsocket.working_signal == false){
+						robotsocket.listen_signal = false; // 监听停止
+						robotsocket.send_signal = false; // 发送停止
+						robotsocket.sub_signal = false; // 订阅停止
+						// robotsocket.stop(); //ros发布停止话题
 					}
 				}
+				cout<<"thread1 over"<<endl;
 			});
 			
-			// 线程2:监听
+			// 线程2:监听停止信号
 			thread listen_cmd([&]{
-				while(listen_signal.load()){
+				while(robotsocket.listen_signal.load()){
+					//问题：
+					// 阻塞到recv()，没有办法跳出循环。
+					// 解决方法，把sub和recv做一个最大的线程，
+					
 					recv(socket_cli, recvbuf2, sizeof(recvbuf2), 0);
 					//如果有停止信号
 					if(recvbuf2[4]==0x04){
-						listen_signal = false; // 监听停止
-						send_signal = false; // 发送停止
-						robotsocket.stop(); //ros发布停止话题
+						robotsocket.listen_signal = false; // 监听停止
+						robotsocket.send_signal = false; // 发送停止
+						robotsocket.sub_signal = false; // 订阅停止
+						// robotsocket.stop(); //ros发布停止话题
 					}
 				}
+				cout<<"thread2 over"<<endl;
 			});
-
-			// 修改:
-			// 线程3:监听工作是否完成,state是否等于1
-			// thread listen_state
 			
 			//线程join
 			send_cmd.join();
 			listen_cmd.join();
+			listen_sub.join();
 
 			//结束发送
+			cout<<"over"<<endl;
 			memset(robotsocket.cmd2, 0, sizeof(robotsocket.cmd2));//清除内存
 			send_length = robotsocket.action2_over(recvbuf,robotsocket.cmd2,recvbuf_length);//操作2_over
-			send(socket_cli, robotsocket.cmd2, send_length, 0);//发送
+			// send(socket_cli, robotsocket.cmd2, send_length, 0);//发送
 			cout << "send cmd2_over successfully" << endl;
-			robotsocket.working_signal = false;//
 			break;
 		}
 
