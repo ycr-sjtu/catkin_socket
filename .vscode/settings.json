@@ -69,5 +69,11 @@
         "ros.h": "c",
         "*.ipp": "cpp"
     },
-    "C_Cpp.errorSquiggles": "enabled"
+    "C_Cpp.errorSquiggles": "enabled",
+    "python.autoComplete.extraPaths": [
+        "/home/ycr/catkin_GPS/devel/lib/python2.7/dist-packages",
+        "/home/ycr/lio/devel/lib/python2.7/dist-packages",
+        "/home/ycr/catkin_socket/devel/lib/python2.7/dist-packages",
+        "/opt/ros/melodic/lib/python2.7/dist-packages"
+    ]
 }
