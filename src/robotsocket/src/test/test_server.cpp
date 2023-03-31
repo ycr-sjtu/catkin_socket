@@ -11,7 +11,8 @@
 #define LOG  1       //请求队列中最大连接数量
 
 using namespace std;
-
+char recvbuf[1024]; // 接收数据的长度
+int recv_length;
 
 int main (int argc, char** argv)
 {
@@ -76,8 +77,14 @@ int main (int argc, char** argv)
 		}
 		printf("You got a connection from client's IP is %s, port is %d\n",
 				inet_ntoa(client.sin_addr), ntohs(client.sin_port));
-				
-		send(connectfd, "hello!",8,0);
+		recv_length = recv(connectfd, recvbuf, sizeof(recvbuf), 0);
+		for (int i = 0; i < recv_length; i++)
+		    {
+			    printf("%02x ", recvbuf[i]&0xFF);
+		    };
+        cout << endl;
+
+		// send(connectfd, "hello!",8,0);
 		close(connectfd);
 	}
 	close(listenfd);

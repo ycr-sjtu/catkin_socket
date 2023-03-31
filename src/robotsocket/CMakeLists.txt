@@ -54,6 +54,9 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   state.msg
+  harvest_action.msg
+  harvest_vel.msg
+  harvest_state.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -143,7 +146,9 @@ add_library(
   src/execute/action.cpp
   src/execute/control.cpp
   include/robotsocket/robotsocket.h
+  include/robotsocket/harvestingRobotClient.h
 )
+
 add_dependencies(robotsocket_h ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 add_executable(test_json src/test/test_json.cpp)
@@ -151,6 +156,9 @@ target_link_libraries(test_json libjsoncpp.a ${catkin_LIBRARIES})
 
 add_executable(robotsocket src/robotsocket.cpp)
 target_link_libraries(robotsocket robotsocket_h libjsoncpp.a  ${catkin_LIBRARIES})
+
+add_executable(harvestingRobotClient src/harvestingRobotClient.cpp)
+target_link_libraries(harvestingRobotClient robotsocket_h libjsoncpp.a  ${catkin_LIBRARIES})
 
 add_executable(test_server src/test/test_server.cpp)
 target_link_libraries(test_server ${catkin_LIBRARIES})
@@ -173,6 +181,8 @@ target_link_libraries(test_sub ${catkin_LIBRARIES})
 add_executable(test_multisub src/test/test_multisub.cpp)
 target_link_libraries(test_multisub ${catkin_LIBRARIES})
 
+add_executable(dec2hex src/convert/dec2hex.cpp)
+target_link_libraries(dec2hex ${catkin_LIBRARIES})
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}

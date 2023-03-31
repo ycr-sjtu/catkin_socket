@@ -1,0 +1,13 @@
+uint8[] DI
+float64[] analog
+uint8[] DO
+float64[] gyroscope
+float64[] voltage
+float64[] vel
+float64[] current
+int16[] heat_sink_temperature
+int16[] CPU_temperature
+uint8[] left_status
+uint8[] right_status
+uint8[] left_fault
+uint8[] right_fault

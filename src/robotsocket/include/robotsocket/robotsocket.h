@@ -20,6 +20,14 @@ using namespace std;
 		    };
             cout << endl;
         };
+
+        void display(unsigned char* recv, int length){
+            for (int i = 0; i < length; i++)
+		    {
+			    printf("%02x ", recv[i]&0xFF);
+		    };
+            cout << endl;
+        };
         
         //转换函数
         void array2char(char* dbuff, char* sbuff); // 把char[]拼成char
