@@ -142,9 +142,13 @@ add_library(
   src/convert/hex2ascii.cpp
   src/convert/ascii2hex.cpp
   src/convert/char2array.cpp
+  src/convert/dec2hex.cpp
+  src/convert/hex2dec.cpp
+  src/convert/hex2bin.cpp
   src/execute/recv_json.cpp
   src/execute/action.cpp
   src/execute/control.cpp
+  src/execute/harvest_analysis.cpp
   include/robotsocket/robotsocket.h
   include/robotsocket/harvestingRobotClient.h
 )
@@ -180,9 +184,6 @@ target_link_libraries(test_sub ${catkin_LIBRARIES})
 
 add_executable(test_multisub src/test/test_multisub.cpp)
 target_link_libraries(test_multisub ${catkin_LIBRARIES})
-
-add_executable(dec2hex src/convert/dec2hex.cpp)
-target_link_libraries(dec2hex ${catkin_LIBRARIES})
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}

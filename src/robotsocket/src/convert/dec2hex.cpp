@@ -6,8 +6,6 @@
 #include <stdlib.h>
 #include"robotsocket/harvestingRobotClient.h"
 
-using namespace std;
- 
 //i要转化的十进制整数，width转化后的宽度，位数不足则补0 
 string dec2hex(int i, int width)
  {
@@ -22,53 +20,10 @@ string dec2hex(int i, int width)
     string s = s_temp.substr(s_temp.length() - width,   s_temp.length()); //取右width位 
     return s;
  }    
- 
-//
-int char2bits(char ch)
-{
-    int bits = 0;
-    if (ch >= 'a' && ch <= 'z') 
-    {
-        bits = ch - 'a' + 10;
-    } 
-    else if (ch >= 'A' && ch <= 'Z') 
-    {
-        bits = ch - 'A' + 10;
-    } 
-    else if (ch >= '0' && ch <= '9') 
-    {
-        bits = ch - '0';
-    } 
-    else
-    {
-        bits = -1;
-    }
-    return bits;
-}
- 
-int hex2bytes(char *hex, char *bytes) 
-{
-    int len = strlen(hex);
-    int nbytes = len/2;
- 
-    for (int n = 0; n < nbytes; ++ n) 
-    {
-        int lndx = n * 2;
-        int rndx = lndx + 1;
-        int lbits = char2bits(hex[lndx]);
-        int rbits = char2bits(hex[rndx]);
-        if (lbits == -1 || rbits == -1)
-        {
-            return -1;
-        }
-        bytes[n] = (lbits << 4) | rbits;
-    }
- 
-    return nbytes;
-}
 
-//
-void int2hex(int i, int length, char * hex)
+// int转为16进制char[]，i为输入int型整数，length为转换后长度，不足补零，hex为输出char[];
+// nbytes是字节数，length = nbytes*2
+void HarvestingRobotClient::int2hex(int i, int length, char * hex)
 {
 	string s = dec2hex(i,length);
     char res[length];
@@ -76,19 +31,21 @@ void int2hex(int i, int length, char * hex)
         res[i]=s[i];
     }
     res[length]='\0';
-    int nbytes = hex2bytes(res,hex);
-    cout<<"int2hex: ";
-    for (int i = 0 ; i < nbytes; ++ i) 
-    {
-        printf("%hhx ", hex[i]);
-     }
-    cout<<endl;
-}
-
-int main(){
-    int i,length;
-    while(cin>>i>>length){
-        char hex[length];
-        int2hex(i,length,hex);
+    int nbytes = char2array(res,hex);
+    cout<<"i: "<<i<<" length: "<<length<<"nbytes: "<<nbytes<<endl;
+    if(i<0){
+        cout<<"int2hex: ";
+        for (int i = 0 ; i < nbytes; ++ i) 
+        {
+            printf("%hhx ", hex[i]);
+        }
+        cout<<endl;
+    }else{
+        cout<<"int2hex: ";
+        for (int i = 0 ; i < nbytes; ++ i) 
+        {
+            printf("%02x ", hex[i]);
+        }
+        cout<<endl;
     }
 }

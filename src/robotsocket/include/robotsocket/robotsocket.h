@@ -31,7 +31,7 @@ using namespace std;
         
         //转换函数
         void array2char(char* dbuff, char* sbuff); // 把char[]拼成char
-        void char2array(char * hex, char * stream);   // 把char拆开成char[]
+        int char2array(char *hex, char *bytes);   // 把char拆开成char[]
         int hex2ascii(char* hex, char* ascii); // 16进制转ascii
         void ascii2hex(char* ascii, char* hex); // ascii转16进制
 

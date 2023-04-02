@@ -25,7 +25,7 @@ int char2bits(char ch)
     return bits;
 }
  
-int hex2bytes(char *hex, char *bytes) 
+int RobotSocket::char2array(char *hex, char *bytes) 
 {
     int len = strlen(hex);
     int nbytes = len/2;
@@ -44,17 +44,4 @@ int hex2bytes(char *hex, char *bytes)
     }
  
     return nbytes;
-}
- 
-void RobotSocket::char2array(char * hex, char * stream)
-{
-    // char hex[] = "070A0210030000000000";
-    // char stream[10];
-    int nbytes = hex2bytes(hex, stream);
-    // cout<<"char2array: ";
-    // for (int i = 0 ; i < nbytes; ++ i) 
-    // {
-    //     printf("%02x ", stream[i]);
-    //  }
-    // cout<<endl;
 }

@@ -34,11 +34,15 @@ void subscriberCallback_harvest_action(const robotsocket::harvest_action::ConstP
 		harvest.harvest_push_rod = msg->push_rod;
 		harvest.harvest_platform = msg->platform;
 		harvest.harvest_conveyor = msg->conveyor;
+		harvest.harvest_knife = msg->knife;
+		harvest.harvest_shake = msg->shake;
+		printf("push_rod=%d, platform=%d, conveyor=%f, knife=%f, shake=%f\n",msg->push_rod,msg->platform,msg->conveyor,msg->knife,msg->shake);
 }
 void subscriberCallback_harvest_vel(const robotsocket::harvest_vel::ConstPtr& msg){
 		harvest.harvest_state = 2;
-		harvest.left_vel = msg->left_vel;
-		harvest.right_vel = msg->right_vel;
+		harvest.harvest_left_vel = msg->left_vel;
+		harvest.harvest_right_vel = msg->right_vel;
+		printf("left_vel=%d, right_vel=%d\n",msg->left_vel,msg->right_vel);
 }
 
 
@@ -48,7 +52,7 @@ int main(int argc, char **argv)
 	ros::init(argc, argv, "harvestrobot");
 	ros::NodeHandle n;
 
-	char recvbuf[BUF_SIZE];
+	unsigned char recvbuf[BUF_SIZE];
 	char sendbuf[BUF_SIZE];
 
 	/*
@@ -90,7 +94,7 @@ int main(int argc, char **argv)
 	
 	// 打开电源开关
 	send(socket_cli, harvest.harvestcmd2_on, sizeof(harvest.harvestcmd2_on), 0);
-	usleep(100000);
+	ros::Duration(0.1).sleep();
 
 	while(ros::ok()){
 		
@@ -105,48 +109,60 @@ int main(int argc, char **argv)
 		
 		// 如果接受到收割机构控制指令1、如果接受到速度指令2
 		if(harvest.harvest_state == 1){
-			
+			// 控制推杆
 			if(harvest.harvest_push_rod==0){
 				send(socket_cli, harvest.harvestcmd1_stop, sizeof(harvest.harvestcmd1_stop), 0);
-				usleep(100000);
+				ros::Duration(0.1).sleep();
 			}else if(harvest.harvest_push_rod==1){
 				send(socket_cli, harvest.harvestcmd1_long, sizeof(harvest.harvestcmd1_long), 0);
-				usleep(100000);
+				ros::Duration(0.1).sleep();
 			}else if(harvest.harvest_push_rod==2){
 				send(socket_cli, harvest.harvestcmd1_short, sizeof(harvest.harvestcmd1_short), 0);
-				usleep(100000);
+				ros::Duration(0.1).sleep();
 			}
-
+			// 控制平台
 			if(harvest.harvest_platform==1){
 				send(socket_cli, harvest.harvestcmd3_up, sizeof(harvest.harvestcmd3_up), 0);
-				usleep(100000);
+				ros::Duration(0.1).sleep();
 			}else if(harvest.harvest_platform==2){
 				send(socket_cli, harvest.harvestcmd3_up_stop, sizeof(harvest.harvestcmd3_up_stop), 0);
-				usleep(100000);
+				ros::Duration(0.1).sleep();
 			}else if(harvest.harvest_platform==3){
 				send(socket_cli, harvest.harvestcmd4_down, sizeof(harvest.harvestcmd4_down), 0);
-				usleep(100000);
+				ros::Duration(0.1).sleep();
 			}else if(harvest.harvest_platform==4){
 				send(socket_cli, harvest.harvestcmd4_down_stop, sizeof(harvest.harvestcmd4_down_stop), 0);
-				usleep(100000);
+				ros::Duration(0.1).sleep();
 			}
 
-			// 传送带电压变换函数
-			
+			// 控制收割装置
+			harvest.harvest_cut_device_cmd(harvest.harvest_knife,harvest.harvest_shake,harvest.harvestcmd);
 			send(socket_cli, harvest.harvestcmd, sizeof(harvest.harvestcmd), 0);
+			ros::Duration(0.1).sleep();
+			//控制传送带
+			harvest.harvest_conveyor_cmd(harvest.harvest_conveyor, harvest.harvestcmd);
+			send(socket_cli, harvest.harvestcmd, sizeof(harvest.harvestcmd), 0);
+			ros::Duration(0.1).sleep();
+
 			harvest.harvest_state = 0;
 		}else if(harvest.harvest_state == 2){
-			// 速度解析函数
-			// harvestcmd=?
-			usleep(100000);
+			// 控制左右轮
+			harvest.harvest_vel_cmd(harvest.harvest_left_vel, harvest.harvest_right_vel, harvest.harvestcmd);
+			send(socket_cli, harvest.harvestcmd, sizeof(harvest.harvestcmd), 0);
+			ros::Duration(0.1).sleep();
 			harvest.harvest_state = 0;
 		}
-		harvest.display(harvest.harvestcmd,sizeof(harvest.harvestcmd));
+
+		
 		send(socket_cli, harvest.harvestcmd, sizeof(harvest.harvestcmd), 0);
         recvbuf_length = recv(socket_cli, recvbuf, sizeof(recvbuf), 0);
-		
-		// 接受数据，解析数据函数+rospub函数
-		
+		cout<<"recv: ";
+		harvest.display(recvbuf, recvbuf_length);
+		cout<<endl;
+		// 接受数据，解析数据，rospub
+		if(recvbuf_length==94){
+			harvest.harvest_pub(recvbuf, recvbuf_length);
+		}
 		ros::spinOnce(); // 进入回调函数
 		loop_rate.sleep();// 配合执行频率，sleep一段时间，然后进入下一个循环。
     }

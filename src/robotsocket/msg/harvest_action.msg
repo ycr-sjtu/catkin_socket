@@ -4,3 +4,7 @@ uint8 push_rod
 uint8 platform
 # 传送带 电压0-10V
 float64 conveyor
+# 割刀 电压0-10V
+float64 knife
+# 前端输送电机 电压0-10V
+float64 shake
