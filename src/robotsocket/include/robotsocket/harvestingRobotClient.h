@@ -31,7 +31,7 @@ class HarvestingRobotClient:public RobotSocket{
         unsigned char harvestcmd4_down_stop[13] = {0x3c, 0x30, 0x34, 0x7c, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x3e};
 
         // 功能05：设置两个履带电机<05|左电机转速右电机转速>
-        unsigned char harvestcmd5[13] = {0x3c, 0x30, 0x35, 0x7c, 0x00, 0x00, 0x00, 0x64, 0x00, 0x00, 0x00, 0x64,0x3e};
+        unsigned char harvestcmd5[13] = {0x3c, 0x30, 0x35, 0x7c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,0x3e};
         
         // 功能06：设置割刀和输送电机电压<06|割刀电机电压输送电机电压> 1v 1v测试
         unsigned char harvestcmd6[13] = {0X3c, 0x30, 0x36, 0x7c, 0x8c, 0xcc, 0x8c, 0xcc, 0x00, 0x00, 0x00, 0x00, 0x3e};
@@ -51,7 +51,7 @@ class HarvestingRobotClient:public RobotSocket{
         // 指令11：ARM软件复位<11|00000000>
         unsigned char harvestcmd11[13] = {0x3c, 0x31, 0x31, 0x7c,  0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x3e};
         
-        // 心跳state=0; action state=1; vel state=2
+        // 心跳state=0; action state=1; vel state=2;
         int harvest_state = 0;
         // 推杆 0停止 1伸出 2缩回
         int harvest_push_rod = 0;
@@ -66,6 +66,12 @@ class HarvestingRobotClient:public RobotSocket{
         double harvest_shake = 0;
         // 传送带 电压0-10V
         double harvest_conveyor = 0;
+        // 过热状态值，0正常，1正处于散热状态
+        int harvest_temp_state=0;
+        // 错误状态值，0正常，1正处于错误清除过程
+        int harvest_fault_state=0;
+        // 传送带状态值，1触碰下限位需要上升，2触碰上限位需要下降，0保持不变。
+        int harvest_platform_state=0;
         
         // int转16进制char[]
         void int2hex(int i, int length, char * hex);

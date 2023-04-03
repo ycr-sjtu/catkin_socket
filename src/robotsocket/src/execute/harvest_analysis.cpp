@@ -15,6 +15,16 @@ void HarvestingRobotClient::harvest_vel_cmd(double left_vel, double right_vel, u
 
     char left_vel_cmd[4];
     char right_vel_cmd[4];
+    if(left_vel>2000){
+        left_vel=2000;
+    }else if(left_vel<-2000){
+        left_vel=-2000;
+    }
+    if(right_vel>2000){
+        right_vel=2000;
+    }else if(right_vel<-2000){
+        right_vel=-2000;
+    }
     int2hex(left_vel,8,left_vel_cmd);
     int2hex(right_vel,8,right_vel_cmd);
     cmd[4] = left_vel_cmd[0];
@@ -36,7 +46,16 @@ void HarvestingRobotClient::harvest_cut_device_cmd(double knife_voltage, double 
     cmd[1]=0x30;
     cmd[2]=0x36;
     cmd[3]=0x7c;
-
+    if(knife_voltage>3){
+        knife_voltage=3;
+    }else if(knife_voltage<0){
+        knife_voltage=0;
+    }
+    if(shake_voltage>3){
+        shake_voltage=3;
+    }else if(shake_voltage<0){
+        shake_voltage=0;
+    }
     int knife_vol=(knife_voltage+10)/20*65535;
     int shake_vol=(shake_voltage+10)/20*65535;
     char knife_res[2];
@@ -62,7 +81,11 @@ void HarvestingRobotClient::harvest_conveyor_cmd(double voltage, unsigned char* 
     cmd[1]=0x30;
     cmd[2]=0x37;
     cmd[3]=0x7c;
-
+    if(voltage>3){
+        voltage=3;
+    }else if(voltage<0){
+        voltage=0;
+    }
     int vol=(voltage+10)/20*65535;
     char res[2];
     int2hex(vol,4,res);
@@ -105,6 +128,9 @@ void HarvestingRobotClient::harvest_pub(unsigned char * cmd, int cmd_length){
             msg.DI[i+8]=1;
         }
     }
+
+    // 上下限位开关
+    
 
     // 8路模拟量 16字节 3-18
     int analog_dec1 = hexChar2decInt(cmd+7,2);
@@ -167,6 +193,13 @@ void HarvestingRobotClient::harvest_pub(unsigned char * cmd, int cmd_length){
     int can_temp_dec2 = hexChar2decInt(cmd+64,2);
     int can_temp_dec3 = hexChar2decInt(cmd+66,2);
     int can_temp_dec4 = hexChar2decInt(cmd+68,2);
+    if(can_temp_dec1>75||can_temp_dec2>75||can_temp_dec3>75||can_temp_dec4>75){
+        harvest_temp_state = 1;
+        cout<<"过热！！！"<<endl;
+    }
+    if(can_temp_dec1<70||can_temp_dec2<70||can_temp_dec3<70||can_temp_dec4<70){
+        harvest_temp_state = 0;
+    }
     msg.temperature[0]=(double)can_temp_dec1;
     msg.temperature[1]=(double)can_temp_dec2;
     msg.temperature[2]=(double)can_temp_dec3;
@@ -224,6 +257,14 @@ void HarvestingRobotClient::harvest_pub(unsigned char * cmd, int cmd_length){
         }else{
             msg.right_status[i+16]=1;
         }
+    }
+
+    if(res70[5]=='1'||res71[1]=='1'||res74[5]=='1'||res75[1]=='1'){
+        harvest_fault_state = 1;
+        cout<<"驱动器警告"<<endl;
+    }
+    if(res70[5]=='0'&&res71[1]=='0'&&res74[5]=='0'&&res75[1]=='0'){
+        harvest_fault_state = 0;
     }
 
     // CAN1实时故障 4字节 78-81

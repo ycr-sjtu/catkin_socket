@@ -16,12 +16,13 @@
 #include "robotsocket/harvest_action.h"
 #include "robotsocket/harvest_vel.h"
 
-#define MYPORT 8080	  // 端口号
+#define MYPORT 8000	  // 端口号
 #define BUF_SIZE 1024 // 数据缓冲区最大长度
 
-char *SERVER_IP = "127.0.0.1";
+char *SERVER_IP = "192.168.31.35";
 
 int recvbuf_length; // 接收数据的长度
+int recvbuf_length2; // 接收数据的长度
 int send_length; //发送数据长度
 
 using namespace std;
@@ -145,20 +146,53 @@ int main(int argc, char **argv)
 			ros::Duration(0.1).sleep();
 
 			harvest.harvest_state = 0;
-		}else if(harvest.harvest_state == 2){
+		}
+		if(harvest.harvest_state == 2&&harvest.harvest_temp_state == 0&&harvest.harvest_fault_state == 0){
 			// 控制左右轮
 			harvest.harvest_vel_cmd(harvest.harvest_left_vel, harvest.harvest_right_vel, harvest.harvestcmd);
 			send(socket_cli, harvest.harvestcmd, sizeof(harvest.harvestcmd), 0);
 			ros::Duration(0.1).sleep();
 			harvest.harvest_state = 0;
 		}
-
+		if(harvest.harvest_temp_state == 1){
+			// 过热
+			send(socket_cli, harvest.harvestcmd5, sizeof(harvest.harvestcmd5), 0);
+			ros::Duration(0.1).sleep();
+		}
+		if(harvest.harvest_fault_state == 1){
+			// 停止
+			send(socket_cli, harvest.harvestcmd5, sizeof(harvest.harvestcmd5), 0);
+			ros::Duration(0.1).sleep();
+			// 故障清除
+			send(socket_cli, harvest.harvestcmd9, sizeof(harvest.harvestcmd9), 0);
+			ros::Duration(0.1).sleep();
+			// 延时5s，这里需要看一下清除故障的时间
+			for(int i=0;i<50;i++){
+				cout<<"清除故障中……"<<endl;
+				send(socket_cli, harvest.harvestcmd0, sizeof(harvest.harvestcmd0), 0);
+				recvbuf_length = recv(socket_cli, recvbuf, sizeof(recvbuf), 0);
+				if(recvbuf_length==94){
+					harvest.harvest_pub(recvbuf, recvbuf_length);
+				}
+				ros::Duration(0.1).sleep();
+			}
+			harvest.harvest_state = 0;
+		}
 		
+		// if(harvest.harvest_platform_state == 1){
+		// 	// 上限位
+		// }else if(harvest.harvest_platform_state == 2){
+		// 	// 下限位
+		// }else if(harvest.harvest_platform_state == 0){
+		// }
+
 		send(socket_cli, harvest.harvestcmd, sizeof(harvest.harvestcmd), 0);
-        recvbuf_length = recv(socket_cli, recvbuf, sizeof(recvbuf), 0);
+		recvbuf_length = recv(socket_cli, recvbuf, sizeof(recvbuf), 0);
+		cout<<"recvbuf_length: "<<recvbuf_length<<endl;
 		cout<<"recv: ";
 		harvest.display(recvbuf, recvbuf_length);
 		cout<<endl;
+		
 		// 接受数据，解析数据，rospub
 		if(recvbuf_length==94){
 			harvest.harvest_pub(recvbuf, recvbuf_length);
