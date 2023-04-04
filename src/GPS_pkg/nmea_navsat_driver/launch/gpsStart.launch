@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+	<node pkg="rosbag" type="play" name="playe" output="screen" args="-l /home/agv/catkin_GPS/bag/long.bag"/>
+	<node pkg="nmea_navsat_driver"   name="nmea_topic_driver"  type="nmea_topic_driver" />
+	<node pkg="nmea_navsat_driver"   name="simple_data"  type="nmea_simple_data" />
+	<node pkg="gps_viewer"   name="gps_viewer"  type="gps_viewer" />
+	<node pkg="rviz" type="rviz" name="rviz_gps" args="-d /home/agv/catkin_GPS/src/GPS_pkg/gps_viewer/rviz/defalt.rviz" required="true" />
+</launch>
