@@ -112,12 +112,12 @@ int main(int argc, char **argv)
         ros::spinOnce();
         if (!valid)
         {
-            ROS_INFO("No image yet");
+            // ROS_INFO("No image yet");
             freq.sleep();
             continue;
         }
         valid = false;
-        std::cout<<image_raw.cols<<" "<<image_raw.rows<<std::endl;
+        // std::cout<<image_raw.cols<<" "<<image_raw.rows<<std::endl;
         cv::Rect rect_left(0, 0, 1280, 720);
         cv::Mat image_left = image_raw(rect_left);
 
