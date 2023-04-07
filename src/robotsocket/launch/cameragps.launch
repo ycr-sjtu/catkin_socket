@@ -7,8 +7,8 @@
     <node pkg="rosbag" type="play" name="play_camera" output="screen" args="-l /home/agv/bag/1.bag"/>
   
     <!-- run camera -->
-    <node pkg="camera" type="zed_image_splitter" name="zed_image_splitter" output="screen"/> 
-    <node pkg="rviz" type="rviz" name="rviz_camera" args="-d $(find camera)/launch/rviz.rviz" required="true" />
+    <node pkg="camera" type="zed_image_splitter" name="zed_image_splitter" /> 
+    <!-- <node pkg="rviz" type="rviz" name="rviz_camera" args="-d $(find camera)/launch/rviz.rviz" required="true" /> -->
 
     <!--- Run NMEA-->
     <node pkg="nmea_navsat_driver" type="nmea_topic_driver" name="nmea_topic_driver"/>
@@ -22,7 +22,7 @@
     <node pkg="tf" type="static_transform_publisher" name="gps2map" args="0.0 0.0 0.0 -1.470795 0.0 0.0 /map /world 50" />
   
     <!--- Run GPS Rviz-->
-    <node pkg="rviz" type="rviz" name="gps_rviz" args="-d $(find gps_viewer)/config/rviz_map.rviz" />
+    <!-- <node pkg="rviz" type="rviz" name="gps_rviz" args="-d $(find gps_viewer)/config/rviz_map.rviz" /> -->
   
   </launch>
   

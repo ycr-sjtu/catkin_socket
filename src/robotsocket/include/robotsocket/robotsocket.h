@@ -7,6 +7,7 @@
 #include "robotsocket/state.h"
 #include "sensor_msgs/NavSatFix.h"
 #include "nav_msgs/Path.h"
+#include "std_msgs/Int8.h"
 using namespace std;
  
  class RobotSocket{
@@ -37,13 +38,13 @@ using namespace std;
 
         // 接受到recv1:00 00 00 00 01 (心跳指令)
 		// 回复cmd1(机器人编号):50 00 00 01
-        // 0x00, 0x32, 0x00, 0x00, 0x01
-		const char cmd1[5] = {0x00, 0x32, 0x00, 0x00, 0x01};
+        // 0x00, 0x32, 0x00, 0x00, 0x02
+		const char cmd1[5] = {0x00, 0x32, 0x00, 0x00, 0x02};
 
         // 接受到recv2:00 00 00 00 02 + {"x":"7","y":"7","id":"1"} (机器人下发任务指令)
 		// 回复cmd2: 00 10 06 07 30 01 00  + {"runningSpeed":"1","recoveryRate":"60","x":"1","y":"1","lon":"1","id":"1","lat":"1","status":"01"}
-		const char cmd2_head[7] = {0x00, 0x32, 0x00, 0x00, 0x01, 0x01, 0x00};
-        const char cmd2_over[7] = {0x00, 0x32, 0x00, 0x00, 0x01, 0x01, 0x01};
+		const char cmd2_head[7] = {0x00, 0x32, 0x00, 0x00, 0x02, 0x01, 0x00};
+        const char cmd2_over[7] = {0x00, 0x32, 0x00, 0x00, 0x02, 0x01, 0x01};
         char cmd2[1024];// 发送给服务器的指令
 
         void recv2_json(char * str,char * myJsonChar);// 02指令的json处理函数
@@ -55,7 +56,7 @@ using namespace std;
 
         //接受到recv3:00 00 00 00 03 (实时获取机器人的位置指令)
         //回复cmd3: 00 10 06 07 30 00 + {"runningSpeed":"1","recoveryRate":"60","x":"0","y":"0","lon":"0","lat":"0","status":"02"} 
-        const char cmd3_head[6] = {0x00, 0x32, 0x00, 0x00, 0x01, 0x00};
+        const char cmd3_head[6] = {0x00, 0x32, 0x00, 0x00, 0x02, 0x00};
         char cmd3[1024]; // 发送给服务器的指令
         void recv3_json(char * myJsonChar); // 03指令的json处理函数    
         int action3(char * recv3, char * recv3_send,int recv3_length); //03指令操作函数       
@@ -67,7 +68,7 @@ using namespace std;
         //接收到recv7:00 00 00 00 08(左转)
         //接收到recv9:00 00 00 00 09(右转)
         //都回复cmd4:00 10 06 07 30 02 +{"runningSpeed":"8.6","recoveryRate":"0","x":"5","y":"5","lon":"5","lat":"5","status":"01"}
-        const char cmd4_head[6] = {0x00, 0x32, 0x00, 0x00, 0x01, 0x02};
+        const char cmd4_head[6] = {0x00, 0x32, 0x00, 0x00, 0x02, 0x02};
         char cmd4[1024];//发送给服务器的指令
         void recv4_json(char * myJsonChar); // 06指令的json处理函数
         int action4(char * recv4, char * recv4_send,int recv4_length);//06指令操作函数
@@ -92,7 +93,7 @@ using namespace std;
         
         //订阅机器人参数x y lon lat state
         void robot_sub();
-        
+        int cmd_state;
         atomic_int state;
         //订阅机器人状态
         void state_sub(atomic_bool * working_signal);
@@ -100,6 +101,7 @@ using namespace std;
         void subscriberCallback_state(const robotsocket::state::ConstPtr& msg);
         void subscriberCallback_gps(const sensor_msgs::NavSatFix::ConstPtr& gps);
         void subscriberCallback_path(const nav_msgs::Path::ConstPtr& path);
+        void subscriberCallback_cmd_state(const std_msgs::Int8::ConstPtr& state);
 
 
  };

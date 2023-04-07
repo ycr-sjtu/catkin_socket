@@ -19,7 +19,8 @@
 #define MYPORT 3311	  // 端口号
 #define BUF_SIZE 1024 // 数据缓冲区最大长度
 
-const char *SERVER_IP = "117.144.159.178";
+const char *SERVER_IP = "117.144.159.178"; // 真实
+// const char *SERVER_IP = "127.0.0.1"; //测试
 
 int recvbuf_length; // 接收数据的长度
 int send_length;	// 发送数据长度
@@ -79,6 +80,7 @@ int main(int argc, char **argv)
 	{
 		// 使用recv()函数来接收服务器发送的消息
 		recvbuf_length = recv(socket_cli, recvbuf, sizeof(recvbuf), 0);
+		
 		if (recvbuf_length >= 5)
 		{
 			// 显示接受到的消息recvbuf
@@ -162,6 +164,7 @@ int main(int argc, char **argv)
 					if(recvbuf2[4]==0x04){
 						robotsocket.listen_signal = false; // 监听停止
 						robotsocket.send_signal = false; // 发送停止
+						// robotsocket.working_signal == false;
 						robotsocket.stop(); //ros发布停止话题
 					}
 				}

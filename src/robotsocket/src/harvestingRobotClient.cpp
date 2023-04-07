@@ -92,10 +92,6 @@ int main(int argc, char **argv)
 	ros::Rate loop_rate(10);
 	ros::Subscriber subscribe_action;
     ros::Subscriber subscribe_vel;
-	
-	// 打开电源开关
-	send(socket_cli, harvest.harvestcmd2_on, sizeof(harvest.harvestcmd2_on), 0);
-	ros::Duration(0.1).sleep();
 
 	while(ros::ok()){
 		
@@ -110,6 +106,9 @@ int main(int argc, char **argv)
 		
 		// 如果接受到收割机构控制指令1、如果接受到速度指令2
 		if(harvest.harvest_state == 1){
+			// 打开电源开关
+			send(socket_cli, harvest.harvestcmd2_on, sizeof(harvest.harvestcmd2_on), 0);
+			ros::Duration(0.1).sleep();
 			// 控制推杆
 			if(harvest.harvest_push_rod==0){
 				send(socket_cli, harvest.harvestcmd1_stop, sizeof(harvest.harvestcmd1_stop), 0);
@@ -159,16 +158,16 @@ int main(int argc, char **argv)
 			send(socket_cli, harvest.harvestcmd5, sizeof(harvest.harvestcmd5), 0);
 			ros::Duration(0.1).sleep();
 		}
+
 		if(harvest.harvest_fault_state == 1){
-			// 停止
-			send(socket_cli, harvest.harvestcmd5, sizeof(harvest.harvestcmd5), 0);
+			send(socket_cli, harvest.harvestcmd5, sizeof(harvest.harvestcmd5), 0); // 停止
 			ros::Duration(0.1).sleep();
-			// 故障清除
-			send(socket_cli, harvest.harvestcmd9, sizeof(harvest.harvestcmd9), 0);
+
+			send(socket_cli, harvest.harvestcmd9, sizeof(harvest.harvestcmd9), 0); // 故障清除
 			ros::Duration(0.1).sleep();
-			// 延时5s，这里需要看一下清除故障的时间
-			for(int i=0;i<50;i++){
-				cout<<"清除故障中……"<<endl;
+
+			while(harvest.harvest_fault_state){
+				cout<<"故障清除中……"<<endl;
 				send(socket_cli, harvest.harvestcmd0, sizeof(harvest.harvestcmd0), 0);
 				recvbuf_length = recv(socket_cli, recvbuf, sizeof(recvbuf), 0);
 				if(recvbuf_length==94){
@@ -176,7 +175,7 @@ int main(int argc, char **argv)
 				}
 				ros::Duration(0.1).sleep();
 			}
-			harvest.harvest_state = 0;
+			cout<<"故障清除成功！"<<endl;
 		}
 		
 		// if(harvest.harvest_platform_state == 1){

@@ -10,7 +10,7 @@
   // Connect to ROS.
 
   ros = new ROSLIB.Ros({
-    url:'ws://192.168.10.115:9090/'
+    url:'ws://106.15.233.31:9090/'
   });
   
 
