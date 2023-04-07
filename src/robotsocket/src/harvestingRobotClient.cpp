@@ -15,6 +15,7 @@
 #include "robotsocket/harvestingRobotClient.h"
 #include "robotsocket/harvest_action.h"
 #include "robotsocket/harvest_vel.h"
+#include <geometry_msgs/Twist.h>
 
 #define MYPORT 8000	  // 端口号
 #define BUF_SIZE 1024 // 数据缓冲区最大长度
@@ -44,6 +45,45 @@ void subscriberCallback_harvest_vel(const robotsocket::harvest_vel::ConstPtr& ms
 		harvest.harvest_left_vel = msg->left_vel;
 		harvest.harvest_right_vel = msg->right_vel;
 		printf("left_vel=%d, right_vel=%d\n",msg->left_vel,msg->right_vel);
+}
+
+void subscriberCallback_harvest_cmd_vel(const geometry_msgs::Twist::ConstPtr& msg){
+		
+		double wheel_base = 1.0;// 驱动轮间距
+		double wheel_radius = 0.10;//车轮半径
+		double transfer = 80; //减速机传动比
+		double max_wheel_speed = 0.5;//车轮的最大线速度
+		double max_omega = 0.4;// 车旋转的最大角速度
+		
+
+		harvest.harvest_state = 2;
+		double v = msg->linear.x;
+		double w = msg->angular.z;
+		double scale = 1;
+		if(abs(w)>max_omega) // 车旋转的最大角速度
+		{
+			scale = max_omega / abs(w);
+        	v = scale * v;
+        	w = scale * w;
+		}
+		double right_wheel_speed = v + 0.5 * w * wheel_base;
+    	double left_wheel_speed = v - 0.5 * w * wheel_base;
+		if (abs(right_wheel_speed) > max_wheel_speed || abs(left_wheel_speed) > max_wheel_speed) // 限制车轮最大速度
+    {
+        double base = abs(left_wheel_speed);
+        if (abs(right_wheel_speed) > abs(left_wheel_speed))
+        {
+            base = abs(right_wheel_speed);
+        }
+        scale = max_wheel_speed / base;
+        right_wheel_speed = scale * right_wheel_speed;
+        left_wheel_speed = scale * left_wheel_speed;
+    }
+	 // 轮速和电机转速rpm的关系 速度为1m/s
+    double motor_rotate_coeff_ = 1 / wheel_radius / 2 / 3.1415926 * transfer * 60;
+	harvest.harvest_left_vel = left_wheel_speed * motor_rotate_coeff_;
+    harvest.harvest_right_vel = right_wheel_speed * motor_rotate_coeff_;
+	printf("left_vel=%d, right_vel=%d\n",harvest.harvest_left_vel,harvest.harvest_right_vel);
 }
 
 
@@ -92,6 +132,7 @@ int main(int argc, char **argv)
 	ros::Rate loop_rate(10);
 	ros::Subscriber subscribe_action;
     ros::Subscriber subscribe_vel;
+	ros::Subscriber subscribe_cmd_vel;
 
 	while(ros::ok()){
 		
@@ -102,7 +143,8 @@ int main(int argc, char **argv)
 
 		// 回调函数接受ros话题速度、收割机构
 		subscribe_action = n.subscribe("/harvest_action", 10, &subscriberCallback_harvest_action);
-    	subscribe_vel = n.subscribe("/harvest_vel", 10, &subscriberCallback_harvest_vel);
+    	// subscribe_vel = n.subscribe("/harvest_vel", 10, &subscriberCallback_harvest_vel);
+		subscribe_cmd_vel = n.subscribe("/cmd_vel", 10, &subscriberCallback_harvest_cmd_vel);
 		
 		// 如果接受到收割机构控制指令1、如果接受到速度指令2
 		if(harvest.harvest_state == 1){
