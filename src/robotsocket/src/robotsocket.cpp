@@ -16,11 +16,16 @@
 #include <thread>
 #include <atomic>
 
-#define MYPORT 3311	  // 端口号
-#define BUF_SIZE 1024 // 数据缓冲区最大长度
+#define MYPORT 3014	  // 正式端口号
+const char *SERVER_IP = "101.231.56.118"; // 正式ip
 
-const char *SERVER_IP = "117.144.159.178"; // 真实
-// const char *SERVER_IP = "127.0.0.1"; //测试
+// #define MYPORT 3311	  // 测试端口号
+// const char *SERVER_IP = "117.144.159.178"; // 测试ip
+
+// #define MYPORT 3311	  // 本地端口号
+// const char *SERVER_IP = "127.0.0.1"; //本地ip
+
+#define BUF_SIZE 1024 // 数据缓冲区最大长度
 
 int recvbuf_length; // 接收数据的长度
 int send_length;	// 发送数据长度

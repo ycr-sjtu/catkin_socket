@@ -49,7 +49,8 @@ using namespace std;
 
         void recv2_json(char * str,char * myJsonChar);// 02指令的json处理函数
         void recv2_json_start(char * str,char * myJsonChar);// 02指令的json处理函数
-        
+        void recv2_json_over(char * str,char * myJsonChar);// 02指令的json处理函数
+
         int action2_start(char * recv2, char * recv2_send,int recv2_length);   //02指令操作函数
         int action2(char * recv2, char * recv2_send,int recv2_length);   //02指令操作函数
          int action2_over(char * recv2, char * recv2_send,int recv2_length);   //02指令操作函数          

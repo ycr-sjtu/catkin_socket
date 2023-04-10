@@ -49,11 +49,11 @@ void subscriberCallback_harvest_vel(const robotsocket::harvest_vel::ConstPtr& ms
 
 void subscriberCallback_harvest_cmd_vel(const geometry_msgs::Twist::ConstPtr& msg){
 		
-		double wheel_base = 1.0;// 驱动轮间距
-		double wheel_radius = 0.10;//车轮半径
+		double wheel_base = 1.44;// 驱动轮间距
+		double wheel_radius = 0.11;//车轮半径
 		double transfer = 80; //减速机传动比
-		double max_wheel_speed = 0.5;//车轮的最大线速度
-		double max_omega = 0.4;// 车旋转的最大角速度
+		double max_wheel_speed = 0.2878;//车轮的最大线速度
+		double max_omega = 0.399;// 车旋转的最大角速度
 		
 
 		harvest.harvest_state = 2;
