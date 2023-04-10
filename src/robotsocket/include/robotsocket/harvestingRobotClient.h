@@ -51,6 +51,10 @@ class HarvestingRobotClient:public RobotSocket{
         // 指令11：ARM软件复位<11|00000000>
         unsigned char harvestcmd11[13] = {0x3c, 0x31, 0x31, 0x7c,  0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x3e};
         
+        // 指令13 ：使用仿形功能<13|10000000>  <13|00000000>
+        unsigned char harvestcmd13_on[13] = {0x3c, 0x31, 0x33, 0x7c,  0x31, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x3e};
+        unsigned char harvestcmd13_off[13] = {0x3c, 0x31, 0x33, 0x7c,  0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x3e};
+
         // 心跳state=0; action state=1; vel state=2;
         int harvest_state = 0;
         // 推杆 0停止 1伸出 2缩回
@@ -66,6 +70,8 @@ class HarvestingRobotClient:public RobotSocket{
         double harvest_shake = 0;
         // 传送带 电压0-10V
         double harvest_conveyor = 0;
+        // 仿形 0禁用，1使用
+        int harvest_imitate = 0;
         // 过热状态值，0正常，1正处于散热状态
         int harvest_temp_state=0;
         // 错误状态值，0正常，1正处于错误清除过程

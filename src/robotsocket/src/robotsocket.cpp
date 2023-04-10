@@ -16,11 +16,11 @@
 #include <thread>
 #include <atomic>
 
-#define MYPORT 3014	  // 正式端口号
-const char *SERVER_IP = "101.231.56.118"; // 正式ip
+// #define MYPORT 3014	  // 正式端口号
+// const char *SERVER_IP = "101.231.56.118"; // 正式ip
 
-// #define MYPORT 3311	  // 测试端口号
-// const char *SERVER_IP = "117.144.159.178"; // 测试ip
+#define MYPORT 3311	  // 测试端口号
+const char *SERVER_IP = "117.144.159.178"; // 测试ip
 
 // #define MYPORT 3311	  // 本地端口号
 // const char *SERVER_IP = "127.0.0.1"; //本地ip

@@ -8,3 +8,5 @@ float64 conveyor
 float64 knife
 # 前端输送电机 电压0-10V，建议3V以内
 float64 shake
+# 仿形 0禁用，1使用
+uint8 imitate

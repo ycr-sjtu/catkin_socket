@@ -37,8 +37,8 @@ void subscriberCallback_harvest_action(const robotsocket::harvest_action::ConstP
 		harvest.harvest_platform = msg->platform;
 		harvest.harvest_conveyor = msg->conveyor;
 		harvest.harvest_knife = msg->knife;
-		harvest.harvest_shake = msg->shake;
-		printf("push_rod=%d, platform=%d, conveyor=%f, knife=%f, shake=%f\n",msg->push_rod,msg->platform,msg->conveyor,msg->knife,msg->shake);
+		harvest.harvest_imitate = msg->imitate;
+		printf("push_rod=%d, platform=%d, conveyor=%f, knife=%f, shake=%f, imitate=%d\n",msg->push_rod,msg->platform,msg->conveyor,msg->knife,msg->shake,msg->imitate);
 }
 void subscriberCallback_harvest_vel(const robotsocket::harvest_vel::ConstPtr& msg){
 		harvest.harvest_state = 2;

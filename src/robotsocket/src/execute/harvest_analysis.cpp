@@ -319,8 +319,9 @@ void HarvestingRobotClient::harvest_pub(unsigned char * cmd, int cmd_length){
             msg.right_fault[i+16]=1;
         }
     }
-
-    // 备用 7字节 86-92
+    // 仿形 86
+    
+    // 备用 7字节 87-92
     // 结束符 1字节 93
     
     // while(pub.getNumSubscribers()<1);
