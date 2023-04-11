@@ -37,6 +37,7 @@ void subscriberCallback_harvest_action(const robotsocket::harvest_action::ConstP
 		harvest.harvest_platform = msg->platform;
 		harvest.harvest_conveyor = msg->conveyor;
 		harvest.harvest_knife = msg->knife;
+		harvest.harvest_shake = msg->shake;
 		harvest.harvest_imitate = msg->imitate;
 		printf("push_rod=%d, platform=%d, conveyor=%f, knife=%f, shake=%f, imitate=%d\n",msg->push_rod,msg->platform,msg->conveyor,msg->knife,msg->shake,msg->imitate);
 }
@@ -174,6 +175,14 @@ int main(int argc, char **argv)
 				ros::Duration(0.1).sleep();
 			}else if(harvest.harvest_platform==4){
 				send(socket_cli, harvest.harvestcmd4_down_stop, sizeof(harvest.harvestcmd4_down_stop), 0);
+				ros::Duration(0.1).sleep();
+			}
+			
+			if(harvest.harvest_imitate==0){
+				send(socket_cli, harvest.harvestcmd13_off, sizeof(harvest.harvestcmd13_off), 0);
+				ros::Duration(0.1).sleep();
+			}else if(harvest.harvest_imitate==1){
+				send(socket_cli, harvest.harvestcmd13_on, sizeof(harvest.harvestcmd13_on), 0);
 				ros::Duration(0.1).sleep();
 			}
 

@@ -5,6 +5,7 @@
 #include"robotsocket/state.h"
 #include "sensor_msgs/NavSatFix.h"
 #include"nav_msgs/Path.h"
+#include"tf/transform_datatypes.h"
 #include <geometry_msgs/PoseStamped.h>
 #include "std_msgs/Int8.h"
 
@@ -19,7 +20,7 @@ void RobotSocket::forward()
 
     /* 要发布的消息: 让乌龟以1.0的线速度前进 */
     geometry_msgs::Twist msg;
-    msg.linear.x = 1.0;
+    msg.linear.x = 0.5;
     msg.linear.y = 0.0;
     msg.linear.z = 0.0;
 
@@ -45,7 +46,7 @@ void RobotSocket::back()
 
     /* 要发布的消息: 让乌龟以1.0的线速度后退 */
     geometry_msgs::Twist msg;
-    msg.linear.x = -1.0;
+    msg.linear.x = -0.5;
     msg.linear.y = 0.0;
     msg.linear.z = 0.0;
 
@@ -76,7 +77,7 @@ void RobotSocket::left(){
 
     msg.angular.x = 0.0;
     msg.angular.y = 0.0;
-    msg.angular.z = 1.0;
+    msg.angular.z = 0.5;
 
     // 发布消息
     pub.publish(msg);
@@ -101,7 +102,7 @@ void RobotSocket::right(){
 
     msg.angular.x = 0.0;
     msg.angular.y = 0.0;
-    msg.angular.z = -1.0;
+    msg.angular.z = -0.5;
 
     // 发布消息
     pub.publish(msg);
@@ -131,10 +132,14 @@ void RobotSocket::warehouse(){
     ROS_INFO("warehouse");
     ros::NodeHandle n;
     ros::Publisher publish = n.advertise<robotsocket::state>("/state", 10, true);
+    ros::Publisher publish_warehouse = n.advertise<std_msgs::Int8>("/navi_cmd", 10, true);
     robotsocket::state msg;
+    std_msgs::Int8 warehouse;
     msg.state = 2;
+    warehouse.data = 10;
     // while(publish.getNumSubscribers()<1);
     publish.publish(msg);
+    publish_warehouse.publish(warehouse);
     ros::Duration(0.5).sleep();
 };
 
@@ -150,15 +155,17 @@ void RobotSocket::robot_pub(){
     msg.y = target[1];
     msg.state = 0;
     geometry_msgs::PoseStamped start_pose;
+    geometry_msgs::Quaternion q;
+    q = tf::createQuaternionMsgFromRollPitchYaw(0,0,M_PI_2);
     start_pose.header.frame_id = "map";
     start_pose.header.stamp = ros::Time::now();
     start_pose.pose.position.x = target[0];
     start_pose.pose.position.y = target[1];
     start_pose.pose.position.z = 0;
-    start_pose.pose.orientation.x = 0;
-    start_pose.pose.orientation.y = 0;
-    start_pose.pose.orientation.z = 0.711668009588;
-    start_pose.pose.orientation.w = 0.702515938701;
+    start_pose.pose.orientation.x = q.x;
+    start_pose.pose.orientation.y = q.y;
+    start_pose.pose.orientation.z = q.z;
+    start_pose.pose.orientation.w = q.w;
     // while(publish.getNumSubscribers()<1);
     publish.publish(msg);
     publish_pose.publish(start_pose);

@@ -24,19 +24,25 @@ void RobotSocket::recv2_json(char *str, char *myJsonChar)
     }
 
     // double转string
-    stringstream position_x, position_y, position_lon, position_lat, ss_state;
-    string str_x, str_y, str_lon, str_lat, str_state;
+    // stringstream position_x, position_y, position_lon, position_lat, ss_state;
+    // string str_x, str_y, str_lon, str_lat, str_state;
     position_x << setprecision(12) << position[0];
     position_y << setprecision(12) << position[1];
     position_lon << setprecision(11) << position[2];
     position_lat << setprecision(12) << position[3];
     ss_state << cmd_state;
-    str_x = position_x.str();
-    str_y = position_y.str();
-    str_lon = position_lon.str();
-    str_lat = position_lat.str();
-    str_state = ss_state.str();
-
+    if(position_lon.str()!="nan"){
+        str_x = position_x.str();
+        str_y = position_y.str();
+        str_lon = position_lon.str();
+        str_lat = position_lat.str();
+        str_state = ss_state.str();
+    }
+    //  str_x = position_x.str();
+    //     str_y = position_y.str();
+    //     str_lon = position_lon.str();
+    //     str_lat = position_lat.str();
+    //     str_state = ss_state.str();
     // jsoncpp 初始化json对象
     Json::Value myJson;
     myJson["runningSpeed"] = "1";
@@ -46,7 +52,7 @@ void RobotSocket::recv2_json(char *str, char *myJsonChar)
     myJson["lon"] = str_lon;
     myJson["lat"] = str_lat;
     myJson["id"] = _root["id"];
-    myJson["status"] = str_state;
+    myJson["status"] = "3";
 
     // jsoncpp json对象转换成字符串
     Json::FastWriter _Writer;
@@ -77,18 +83,27 @@ void RobotSocket::recv2_json_over(char *str, char *myJsonChar)
     }
 
     // double转string
-    stringstream position_x, position_y, position_lon, position_lat, ss_state;
-    string str_x, str_y, str_lon, str_lat, str_state;
+    // stringstream position_x, position_y, position_lon, position_lat, ss_state;
+    // string str_x, str_y, str_lon, str_lat, str_state;
     position_x << setprecision(12) << position[0];
     position_y << setprecision(12) << position[1];
     position_lon << setprecision(11) << position[2];
     position_lat << setprecision(12) << position[3];
     ss_state << cmd_state;
-    str_x = position_x.str();
-    str_y = position_y.str();
-    str_lon = position_lon.str();
-    str_lat = position_lat.str();
-    str_state = ss_state.str();
+
+    if(position_lon.str()!="nan"){
+        str_x = position_x.str();
+        str_y = position_y.str();
+        str_lon = position_lon.str();
+        str_lat = position_lat.str();
+        str_state = ss_state.str();
+    }
+
+    // str_x = position_x.str();
+    // str_y = position_y.str();
+    // str_lon = position_lon.str();
+    // str_lat = position_lat.str();
+    // str_state = ss_state.str();
 
     // jsoncpp 初始化json对象
     Json::Value myJson;
@@ -131,18 +146,27 @@ void RobotSocket::recv2_json_start(char *str, char *myJsonChar)
     }
     
     // double转string
-    stringstream position_x, position_y, position_lon, position_lat, ss_state;
-    string str_x, str_y, str_lon, str_lat, str_state;
+    // stringstream position_x, position_y, position_lon, position_lat, ss_state;
+    // string str_x, str_y, str_lon, str_lat, str_state;
     position_x << setprecision(12) << position[0];
     position_y << setprecision(12) << position[1];
     position_lon << setprecision(11) << position[2];
     position_lat << setprecision(12) << position[3];
     ss_state << cmd_state;
-    str_x = position_x.str();
-    str_y = position_y.str();
-    str_lon = position_lon.str();
-    str_lat = position_lat.str();
-    str_state = ss_state.str();
+    
+    if(position_lon.str()!="nan"){
+        str_x = position_x.str();
+        str_y = position_y.str();
+        str_lon = position_lon.str();
+        str_lat = position_lat.str();
+        str_state = ss_state.str();
+    }
+    
+    // str_x = position_x.str();
+    // str_y = position_y.str();
+    // str_lon = position_lon.str();
+    // str_lat = position_lat.str();
+    // str_state = ss_state.str();
 
     // jsoncpp 初始化json对象
     Json::Value myJson;
@@ -153,7 +177,7 @@ void RobotSocket::recv2_json_start(char *str, char *myJsonChar)
     myJson["lon"] = str_lon;
     myJson["lat"] = str_lat;
     myJson["id"] = _root["id"];
-    myJson["status"] = str_state;
+    myJson["status"] = "3";
 
     // jsoncpp json对象转换成字符串
     Json::FastWriter _Writer;
@@ -181,18 +205,27 @@ void RobotSocket::recv2_json_start(char *str, char *myJsonChar)
 void RobotSocket::recv3_json(char *myJsonChar)
 {
     // double转string
-    stringstream position_x, position_y, position_lon, position_lat, ss_state;
-    string str_x, str_y, str_lon, str_lat, str_state;
+    // stringstream position_x, position_y, position_lon, position_lat, ss_state;
+    // string str_x, str_y, str_lon, str_lat, str_state;
     position_x << setprecision(12) << position[0];
     position_y << setprecision(12) << position[1];
     position_lon << setprecision(11) << position[2];
     position_lat << setprecision(12) << position[3];
     ss_state << cmd_state;
-    str_x = position_x.str();
-    str_y = position_y.str();
-    str_lon = position_lon.str();
-    str_lat = position_lat.str();
-    str_state = ss_state.str();
+    
+    if(position_lon.str()!="nan"){
+        str_x = position_x.str();
+        str_y = position_y.str();
+        str_lon = position_lon.str();
+        str_lat = position_lat.str();
+        str_state = ss_state.str();
+    }
+    
+    // str_x = position_x.str();
+    // str_y = position_y.str();
+    // str_lon = position_lon.str();
+    // str_lat = position_lat.str();
+    // str_state = ss_state.str();
 
     // jsoncpp 初始化json对象
     Json::Value myJson;
@@ -224,18 +257,27 @@ void RobotSocket::recv3_json(char *myJsonChar)
 void RobotSocket::recv4_json(char *myJsonChar)
 {
     // double转string
-    stringstream position_x, position_y, position_lon, position_lat,ss_state;
-    string str_x, str_y, str_lon, str_lat,str_state;
+    // stringstream position_x, position_y, position_lon, position_lat,ss_state;
+    // string str_x, str_y, str_lon, str_lat,str_state;
     position_x << setprecision(12) << position[0];
     position_y << setprecision(12) << position[1];
     position_lon << setprecision(11) << position[2];
     position_lat << setprecision(12) << position[3];
     ss_state << cmd_state;
-    str_x = position_x.str();
-    str_y = position_y.str();
-    str_lon = position_lon.str();
-    str_lat = position_lat.str();
-    str_state = ss_state.str();
+    
+    if(position_lon.str()!="nan"){
+        str_x = position_x.str();
+        str_y = position_y.str();
+        str_lon = position_lon.str();
+        str_lat = position_lat.str();
+        str_state = ss_state.str();
+    }
+    
+    // str_x = position_x.str();
+    // str_y = position_y.str();
+    // str_lon = position_lon.str();
+    // str_lat = position_lat.str();
+    // str_state = ss_state.str();
 
     // jsoncpp 初始化json对象
     Json::Value myJson;
